@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "testing-app",
-    "slug": "testing-app",
+    "name": "hand-hygiene-audit-app",
+    "slug": "hand-hygiene-audit-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "testingapp",
+    "scheme": "hand-hygiene-audit-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sandycl.hand-hygiene-audit-app"
     },
     "web": {
       "output": "static",
