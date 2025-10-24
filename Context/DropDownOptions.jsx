@@ -1,0 +1,82 @@
+import React, { useEffect, useState } from 'react';
+
+
+export function useDropDown() {
+    const [orgOptions, setOrgOptions] = useState([]);
+    const [deptOptions, setDeptOptions] = useState([]);
+    const [auditorOptions, setAuditorOptions] = useState([]);
+    const [org, setOrg] = useState(null);
+    const [department, setDepartment] = useState(null);
+    
+    const [HCWOptions, setHCWOptions] = useState([]);
+    const [momentOptions, setMomentOptions] = useState([]);
+    const [actionOptions, setActionOptions] = useState([]);
+    const [gloveOptions, setGloveOptions] = useState([]);
+
+    const API = 'http://192.168.0.243:3000';
+
+    useEffect(() => {
+        async function loadOrg() {
+            try {
+                const reqOrgs = await fetch(`${API}/api/Organisation`);
+                const Orgs = await reqOrgs.json();
+                setOrgOptions(Orgs.map(o => ({ label: o.OrgName, value: o.OrgID })))
+
+            } catch (err) {
+                console.log("FETCH ERROR:", err);
+            }
+        }
+        loadOrg();
+    }, []);
+
+    useEffect(() => {
+        if (!org) return;
+
+        (async () => {
+            const reqDepts = await fetch(`${API}/api/Department/${org}`);
+            const Depts = await reqDepts.json();
+            setDeptOptions(Depts.map(d => ({ label: `${d.DeptName} - ${d.DeptSpecialty}`, value: d.DeptCode })))
+        })();
+
+    }, [org]);
+
+    useEffect(() => {
+        if (!department) return;
+
+        (async () => {
+            const reqAuditors = await fetch(`${API}/api/Auditors/${department}`);
+            const Auditors = await reqAuditors.json();
+            setAuditorOptions(Auditors.map(a => ({ label: a.AuditorName, value: a.AuditorID })))
+        })();
+
+    }, [department]);
+
+    useEffect(() => {
+        async function loadHCW() {
+            try{
+                const reqHCW = await fetch(`${API}/api/HCW`);
+                const HCW = await reqHCW.json();
+                setHCWOptions(HCW.map(h => ({ label: `${h.Type} - ${h.Description}`, value: h.Type})))
+            }catch (err) {
+                console.log("FETCH ERROR:", err);
+            }
+        }
+        loadHCW();
+    }, []);
+
+
+
+    return { orgOptions, 
+            deptOptions, 
+            auditorOptions, 
+            org, department, 
+            setOrg, 
+            setDepartment, 
+            HCWOptions,  
+            momentOptions, 
+            actionOptions, 
+            gloveOptions
+        }
+}
+
+

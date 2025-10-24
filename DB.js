@@ -19,20 +19,40 @@ const dbConfig = {
   },
 };
 
-export const pool = await sql.connect(dbConfig); 
-
-// async function InsertOrg(OrgID, OrgName, Location) {
-//     const insert = await pool.request()
-//         .input(OrgID, sql.Int, )
-// }
+export const pool = await sql.connect(dbConfig);
 
 export async function getDatas(tableName) {
-  try{
+  try {
     const result = await pool.request()
-    .query(`SELECT * FROM ${tableName}`);
-    return result.recordset
-  }catch(error) {
-    console.error(error.message)
+      .query(`SELECT * FROM ${tableName}`);
+    return result.recordset;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+export async function getDepts(OrgID) {
+  try {
+    const result = await pool.request()
+      .input('OrgID', sql.Int, OrgID)
+      .query(`SELECT * FROM Department
+            WHERE OrgID = @OrgID`);
+    return result.recordset;
+  } catch (error) {
+    console.error(error);
+    throw error; 
+  }
+};
+
+export async function getAuditors(DeptCode) {
+  try {
+    const result = await pool.request()
+      .input('DeptCode', sql.Int, DeptCode)
+      .query(`SELECT * FROM Auditor
+                WHERE DeptCode = @DeptCode`);
+    return result.recordset;
+  } catch (error) {
+    console.error(error.message);
   }
 }
 

@@ -1,6 +1,8 @@
 import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Modal, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
+import { useDropDown } from '../Context/DropDownOptions';
+
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
 import Spacer from '@/components/ui/Spacer';
@@ -27,28 +29,39 @@ const timerCount = (time) => {
 let results = [];
 
 export default function log() {
-  const [ timer, setTimer ] = useState(0);
-  const [ isActive, setIsActive ] = useState(true);
+  const [timer, setTimer] = useState(0);
+  const [isActive, setIsActive] = useState(true);
   const { hours, mins, seconds } = timerCount(timer);
-  const [ startTime, setStartTime ] = useState(null);
- 
-  const [ expanded, setExpanded ] = useState(true);
-  const [ showForm, setShowForm ] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
-  const [ org, setOrg ] = useState('');
-  const [ department, setDepartment ] = useState('');
-  const [ auditor, setAuditor ] = useState('');
+  const [expanded, setExpanded] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const { orgOptions,
+    deptOptions,
+    auditorOptions,
+    HCWOptions,
+    actionOptions,  
+    gloveOptions,
+    org,
+    setOrg,
+    department,
+    setDepartment
+  } = useDropDown();
+  const [auditor, setAuditor] = useState('');
 
-  const [ HCW, setHCW ] = useState('');
-  const [ moment, setMoment ] = useState('');
-  const [ action, setAction ] = useState('');
-  const [ glove, setGlove ] = useState('');
-  const [ correctMoment, setCorrectMoment ] = useState('');
 
-  const [ warningModalVisible, setWarningModalVisible ] = useState(false)
+  const [HCW, setHCW] = useState('');
+  const [moment, setMoment] = useState('');
+  const [action, setAction] = useState('');
+  const [glove, setGlove] = useState('');
+  const [correctMoment, setCorrectMoment] = useState('');
 
-  const [ saveForm, setSaveForm ] = useState(false);
-  const [ momentNo, setMomentNo ] = useState(0);
+  const [warningModalVisible, setWarningModalVisible] = useState(false)
+
+  const [saveForm, setSaveForm] = useState(false);
+  const [momentNo, setMomentNo] = useState(0);
+
+
 
   const onItemPress = () => {
     setExpanded(!expanded);
@@ -59,12 +72,12 @@ export default function log() {
     setMomentNo(momentNo => results.length + 1);
   };
 
-  function resetResultsArray(){
+  function resetResultsArray() {
     results = [];
   }
 
   const saveFormDetails = () => {
-    
+
   }
 
   const resetDropDown = () => {
@@ -133,51 +146,39 @@ export default function log() {
           <Spacer size={20} />
         </ThemedView>
 
-        <ThemedView>
-          <ThemedView style={styles.formContainer}>
-            <Spacer size={10} />
-
-            <ThemedView style={styles.detailSection}>
-
-              <ThemedText style={{
-                width: '30%',
-                fontSize: 16,
-                marginLeft: 15,
-                padding: 15,
-              }}
-              >Organisation: </ThemedText>
-              <Dropdown
-                dropdownStyle={{
-                  width: '37%',
-                  height: 45, 
-                  marginLeft: 3
-                }}
-                options={[
-                  { label: 'Royal North Shore Hospital', value: 'RNSH' },
-                ]}
-                selectedValue={org}
-                onValueChange={(value) => setOrg(value)}
-              />
-            </ThemedView>
-
-            <ThemedView style={styles.detailSection}>
-              <ThemedText style={styles.text}>Department / Ward: </ThemedText>
-              <TextInput style={styles.Input}></TextInput>
-            </ThemedView>
-
-            <ThemedView style={styles.detailSection}>
-              <ThemedText style={styles.text}>Date:</ThemedText>
-              <ThemedText style={styles.date}>{getFormattedDate()}</ThemedText>
-            </ThemedView>
-
-            <ThemedView style={styles.detailSection}>
-              <ThemedText style={styles.text}>Auditor: </ThemedText>
-              <TextInput style={styles.Input}></TextInput>
-            </ThemedView>
+        <ThemedView style={styles.formContainer}>
+          <Spacer size={10} />
+          <ThemedView style={styles.detailSection}>
+            <ThemedText style={styles.dropdownTitle}>Organisation: </ThemedText>
+            <Dropdown
+              dropdownStyle={styles.dropdownMainForm}
+              options={orgOptions}
+              selectedValue={org}
+              onValueChange={(value) => setOrg(value)}
+            />
           </ThemedView>
 
-          <Spacer size={15} />
+          <ThemedView style={styles.detailSection}>
+            <ThemedText style={styles.dropdownTitle}>Department / Ward: </ThemedText>
+            <Dropdown
+              dropdownStyle={styles.dropdownMainForm}
+              options={deptOptions}
+              selectedValue={department}
+              onValueChange={(value) => setDepartment(value)}
+            />
+          </ThemedView>
+
+          <ThemedView style={styles.detailSection}>
+            <ThemedText style={styles.dropdownTitle}>Auditor</ThemedText>
+            <Dropdown
+              dropdownStyle={styles.dropdownMainForm}
+              options={auditorOptions}
+              selectedValue={auditor}
+              onValueChange={(value) => setAuditor(value)}
+            />
+          </ThemedView>
         </ThemedView>
+
 
         <ThemedView style={styles.mommentBtnSection}>
           <TouchableOpacity style={styles.mommentBtn} onPress={addMoments}>
@@ -186,12 +187,15 @@ export default function log() {
         </ThemedView>
 
         <ThemedView style={styles.timerSection}>
+          <ThemedText style={styles.time} >Date:</ThemedText>
+          <ThemedText style={styles.time}>{getFormattedDate()}</ThemedText>
+
           <ThemedText style={styles.time}>Start time: </ThemedText>
           <ThemedText style={styles.time}>{startTime ?? '--:--'}</ThemedText>
         </ThemedView>
 
 
-        <ThemedView style={styles.timerSection}>
+        <ThemedView style={styles.timerButtonSection}>
           <TouchableOpacity onPress={toggle} style={styles.button}>
             <ThemedText style={styles.buttonText}>{isActive ? 'Pause Audit ' : 'Re-Start Audit '}</ThemedText>
           </TouchableOpacity>
@@ -228,27 +232,14 @@ export default function log() {
 
             <ThemedText style={styles.dropdownText}>HCW code</ThemedText>
             <Dropdown
-              dropdownStyle={styles.dropdown}
-              options={[
-                { label: 'N - Nurse (Registered / Enrolled)', value: 'N' },
-                { label: 'DR - Medical Practitioner', value: 'DR' },
-                { label: 'PC(OSO) - AIN / Personal Care Staff / Operational', value: 'PC' },
-                { label: 'AH - Allied Health; Physio, OT, Speech, Social Work, Pharamacy', value: 'AH' },
-                { label: 'D - Domestic, Cleaning, Food Service', value: 'D' },
-                { label: 'AC - Admin and Clerical', value: 'AC' },
-                { label: 'BL - Invasive Tech including Phlemotomist', value: 'BL' },
-                { label: 'SN - Student Nurse', value: 'SN' },
-                { label: 'SDR - Student Medical Practitioner', value: 'SDR' },
-                { label: 'SAH - Student PC staff/ SIN', value: 'SAH' },
-                { label: 'SPC - Student Allied Health', value: 'SPC' },
-                { label: 'O - Other Not Specified', value: 'O' },
-              ]}
+              dropdownStyle={styles.dropdownAuditForm}
+              options={HCWOptions}
               selectedValue={HCW}
               onValueChange={(value) => setHCW(value)} />
 
             <ThemedText style={styles.dropdownText}>Moment</ThemedText>
             <Dropdown
-              dropdownStyle={styles.dropdown}
+              dropdownStyle={styles.dropdownAuditForm}
               options={[
                 { label: '1 - Before Touching a Patient', value: '1' },
                 { label: '2 - Before a Procedure', value: '2' },
@@ -262,7 +253,7 @@ export default function log() {
 
             <ThemedText style={styles.dropdownText}>Action</ThemedText>
             <Dropdown
-              dropdownStyle={styles.dropdown}
+              dropdownStyle={styles.dropdownAuditForm}
               options={[
                 { label: 'Rub', value: 'R' },
                 { label: 'Wash', value: 'W' },
@@ -274,7 +265,7 @@ export default function log() {
 
             <ThemedText style={styles.dropdownText}>Glove</ThemedText>
             <Dropdown
-              dropdownStyle={styles.dropdown}
+              dropdownStyle={styles.dropdownAuditForm}
               options={[
                 { label: 'On', value: 'On' },
                 { label: 'Off', value: 'Off' },
@@ -286,7 +277,7 @@ export default function log() {
 
             <ThemedText style={styles.dropdownText}> Correct Moment? </ThemedText>
             <Dropdown
-              dropdownStyle={styles.dropdown}
+              dropdownStyle={styles.dropdownAuditForm}
               options={[
                 { label: 'Yes', value: 'Y' },
                 { label: 'No', value: 'N' },
@@ -342,7 +333,14 @@ const styles = StyleSheet.create({
   },
   timerSection: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingLeft: 20,
+    paddingBottom: 15,
+  },
+  timerButtonSection: {
+    flexDirection: 'row',
     justifyContent: 'center',
+    paddingBottom: 15,
   },
   title: {
     fontSize: 20,
@@ -354,26 +352,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   SectionII: {
-    padding: 10,
+    padding: 5,
     fontSize: 14,
     alignItems: 'center',
     borderColor: 'white',
     borderWidth: 1,
 
-  },
-  Input: {
-    height: 30,
-    width: '50%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 13,
-    padding: 5,
-    marginLeft: 10,
-    borderRadius: 5,
-    textAlign: 'center',
-    fontSize: 14,
-    justifyContent: 'center',
-    color: '#625f72',
   },
   text: {
     width: '40%',
@@ -390,7 +374,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d6d5e1',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 10,
+    marginLeft: 5,
   },
   buttonText: {
     color: '#625f72',
@@ -406,7 +390,7 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 16,
-    padding: 15,
+    padding: 8,
   },
   auditSection: {
     flexDirection: 'column',
@@ -428,7 +412,7 @@ const styles = StyleSheet.create({
   momentBtnText: {
     fontSize: 18,
   },
-  dropdown: {
+  dropdownAuditForm: {
     width: '75%',
     flex: 1,
     flexDirection: 'row',
@@ -436,9 +420,23 @@ const styles = StyleSheet.create({
     textAlign: 'flex-start',
     justifyContent: 'flex-start',
     padding: 5,
+
   },
   dropdownText: {
     fontSize: 14,
     padding: 10,
+  },
+  dropdownTitle: {
+    width: '28%',
+    fontSize: 16,
+    marginLeft: 15,
+    padding: 15,
+  },
+  dropdownMainForm: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '40%',
+    minHeight: 56,
+    height: 56
   }
 });
