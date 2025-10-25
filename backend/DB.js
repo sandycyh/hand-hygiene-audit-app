@@ -40,7 +40,7 @@ export async function getDepts(OrgID) {
     return result.recordset;
   } catch (error) {
     console.error(error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -56,6 +56,58 @@ export async function getAuditors(DeptCode) {
   }
 }
 
+export async function getHCW() {
+  try {
+    const result = await pool.request()
+      .query(`SELECT * FROM HCW_Descriptions
+              ORDER BY 
+                CASE WHEN Type = 'N' THEN 1
+		                WHEN Type = 'DR' THEN 2
+		                WHEN Type = 'AH' THEN 3
+		                WHEN Type = 'BL' THEN 4
+		                WHEN Type = 'PC' THEN 5
+		                WHEN Type = 'SN' THEN 6
+		                WHEN Type = 'SAH' THEN 7
+		                ELSE 8
+                END,
+	            Type`);
+    return result.recordset;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+export async function getAction() {
+  try{
+    const result = await pool.request()
+      .query(`SELECT * FROM Action_Descriptions
+              ORDER BY 
+                CASE WHEN Action = 'Rub' THEN 1 
+	                    WHEN Action = 'Wash' THEN 2 
+                      ELSE 3
+                END, 
+                Action `)
+    return result.recordset; 
+  }catch(error) {
+    console.error(error.message);
+  }
+}
+
+export async function getGlove() {
+  try{
+    const result = await pool.request()
+      .query(`SELECT * FROM Glove_Descriptions
+              ORDER BY 
+                CASE WHEN Glove = 'On' THEN 1
+                      WHEN Glove = 'Off' THEN 2
+                      ELSE 3
+                END,
+                Glove`)
+    return result.recordset;
+  }catch(error) {
+    console.error(error.message);
+  }
+}
 
 // ***************** examples of how to get results************ 
 /* async function getAllOrgs() {

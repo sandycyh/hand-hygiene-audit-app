@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { act, useEffect, useState } from 'react';
 
 
 export function useDropDown() {
@@ -64,7 +64,44 @@ export function useDropDown() {
         loadHCW();
     }, []);
 
+    useEffect(() => {
+        async function loadMoment() {
+            try{
+                const reqMoment = await fetch(`${API}/api/Moments`);
+                const moment = await reqMoment.json();
+                setMomentOptions(moment.map(m => ({ label: `${m.Moment} - ${m.Title}`, value: m.Moment})))
+            }catch (err) {
+                console.log("FETCH ERROR:", err);
+            }
+        }
+        loadMoment();
+    }, []);
 
+    useEffect(() => {
+        async function loadAction() {
+            try{ 
+                const reqAction = await fetch(`${API}/api/Actions`); 
+                const action = await reqAction.json();
+                setActionOptions(action.map(a => ({ label: a.Action, value: a.Action})))
+            }catch(err) {
+                console.log("FETCH ERROR:", err);
+            }
+        }
+        loadAction();
+    }, []);
+
+    useEffect(() => {
+        async function loadGlove() {
+            try{
+                const reqGlove = await fetch(`${API}/api/Gloves`);
+                const glove = await reqGlove.json();
+                setGloveOptions(glove.map(g => ({ label: g.Glove, value: g.Glove })))
+            }catch(err) {
+                console.log("FETCH ERROR:", err);
+            }
+        }
+        loadGlove();
+    }, []);
 
     return { orgOptions, 
             deptOptions, 

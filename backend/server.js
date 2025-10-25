@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { getDatas, getDepts, getAuditors } from './DB.js';
+import { getDatas, getDepts, getAuditors, getHCW, getAction, getGlove } from './DB.js';
 
 const app = express();
 app.use(cors());
@@ -41,7 +41,7 @@ app.get('/api/Auditors/:DeptCode', async (req, res) => {
 
 app.get('/api/HCW', async (req, res) => {
   try {
-    const HCW = await getDatas('HCW_Descriptions');
+    const HCW = await getHCW('HCW_Descriptions');
     res.json(HCW);
   } catch (err) {
     res.status(500).json({ error: 'Database Error' });
@@ -59,7 +59,7 @@ app.get('/api/Moments', async (req, res) => {
 
 app.get('/api/Actions', async (req, res) => {
   try{
-    const Actions = await getDatas('Action_Descriptions');
+    const Actions = await getAction('Action_Descriptions');
     res.json(Actions);
   }catch(err){
     res.status(500).json({ error: 'Database Error'});
@@ -68,7 +68,7 @@ app.get('/api/Actions', async (req, res) => {
 
 app.get('/api/Gloves', async (req, res) => {
   try{ 
-    const Gloves = await getDatas('Glove_Descriptions');
+    const Gloves = await getGlove('Glove_Descriptions');
     res.json(Gloves);
   }catch(err) {
     res.status(500).json({ error: 'Database Error'});
@@ -84,10 +84,10 @@ app.get('/api/Results', async (req, res) => {
   }
 });
 
-app.get('/api/ResultSet', async (req, res) => {
+app.get('/api/ResultSets', async (req, res) => {
   try{ 
-    const ResultSet = await getDatas('ResultSet');
-    res.json(ResultSet);
+    const ResultSets = await getDatas('ResultSets');
+    res.json(ResultSets);
   }catch(err) {
     res.status(500).json({ error: 'Database Error'});
   }

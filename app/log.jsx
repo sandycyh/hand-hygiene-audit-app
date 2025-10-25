@@ -40,6 +40,7 @@ export default function log() {
     deptOptions,
     auditorOptions,
     HCWOptions,
+    momentOptions,
     actionOptions,  
     gloveOptions,
     org,
@@ -210,7 +211,7 @@ export default function log() {
           <ThemedView style={styles.SectionII}>
             <ThemedText style={{ paddingVertical: 15 }}>FIVE MOMENTS FOR HAND HYGIENE</ThemedText>
             <CollapsableContainer expanded={expanded}>
-              <ThemedText>1. Before Touching a Patient</ThemedText>
+              {/* <ThemedText>{momentOptions}</ThemedText> */}
               <ThemedText>2. Before a Procedure</ThemedText>
               <ThemedText>3. After a Procedure</ThemedText>
               <ThemedText>4. After Touching a Patient</ThemedText>
@@ -240,13 +241,7 @@ export default function log() {
             <ThemedText style={styles.dropdownText}>Moment</ThemedText>
             <Dropdown
               dropdownStyle={styles.dropdownAuditForm}
-              options={[
-                { label: '1 - Before Touching a Patient', value: '1' },
-                { label: '2 - Before a Procedure', value: '2' },
-                { label: '3 - After a Procedure', value: '3' },
-                { label: '4 - After Touching a Patient', value: '4' },
-                { label: '5 - After Touching Patient\'s Surroundings', value: '5' },
-              ]}
+              options={momentOptions}
               selectedValue={moment}
               onValueChange={(value) => setMoment(value)}
             />
@@ -254,11 +249,7 @@ export default function log() {
             <ThemedText style={styles.dropdownText}>Action</ThemedText>
             <Dropdown
               dropdownStyle={styles.dropdownAuditForm}
-              options={[
-                { label: 'Rub', value: 'R' },
-                { label: 'Wash', value: 'W' },
-                { label: 'Missed', value: 'M' },
-              ]}
+              options={actionOptions}
               selectedValue={action}
               onValueChange={(value) => setAction(value)}
             />
@@ -266,11 +257,7 @@ export default function log() {
             <ThemedText style={styles.dropdownText}>Glove</ThemedText>
             <Dropdown
               dropdownStyle={styles.dropdownAuditForm}
-              options={[
-                { label: 'On', value: 'On' },
-                { label: 'Off', value: 'Off' },
-                { label: 'Continue', value: 'Cont' },
-              ]}
+              options={gloveOptions}
               selectedValue={glove}
               onValueChange={(value) => setGlove(value)}
             />
