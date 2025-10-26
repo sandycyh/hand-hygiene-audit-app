@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Modal, Pressable } from 'react-native'
+import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Modal, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
 import { useDropDown } from '../Context/DropDownOptions';
@@ -48,6 +48,7 @@ export default function log() {
     department,
     setDepartment
   } = useDropDown();
+
   const [auditor, setAuditor] = useState('');
 
 
@@ -61,8 +62,6 @@ export default function log() {
 
   const [saveForm, setSaveForm] = useState(false);
   const [momentNo, setMomentNo] = useState(0);
-
-
 
   const onItemPress = () => {
     setExpanded(!expanded);
@@ -78,7 +77,11 @@ export default function log() {
   }
 
   const saveFormDetails = () => {
+    try { 
 
+    }catch(error){
+      console.error(error.message)
+    }
   }
 
   const resetDropDown = () => {
@@ -138,9 +141,9 @@ export default function log() {
     return () => clearInterval(interval);
   }, [isActive]);
 
+
   return (
     <ThemedView style={styles.container}>
-      <ScrollView style={styles.container}>
         <ThemedView>
           <Spacer size={20} />
           <ThemedText style={styles.title}> Hand Hygiene Observation Form</ThemedText>
@@ -158,6 +161,8 @@ export default function log() {
               onValueChange={(value) => setOrg(value)}
             />
           </ThemedView>
+
+          <Spacer size={7}/>
 
           <ThemedView style={styles.detailSection}>
             <ThemedText style={styles.dropdownTitle}>Department / Ward: </ThemedText>
@@ -180,12 +185,16 @@ export default function log() {
           </ThemedView>
         </ThemedView>
 
+        <Spacer size={13}/>
+
 
         <ThemedView style={styles.mommentBtnSection}>
           <TouchableOpacity style={styles.mommentBtn} onPress={addMoments}>
             <ThemedText style={styles.momentBtnText}>Add a moment</ThemedText>
           </TouchableOpacity>
         </ThemedView>
+
+        <Spacer size={10}/>
 
         <ThemedView style={styles.timerSection}>
           <ThemedText style={styles.time} >Date:</ThemedText>
@@ -211,7 +220,7 @@ export default function log() {
           <ThemedView style={styles.SectionII}>
             <ThemedText style={{ paddingVertical: 15 }}>FIVE MOMENTS FOR HAND HYGIENE</ThemedText>
             <CollapsableContainer expanded={expanded}>
-              {/* <ThemedText>{momentOptions}</ThemedText> */}
+              <ThemedText>1. Before a Touching a Patient</ThemedText>          
               <ThemedText>2. Before a Procedure</ThemedText>
               <ThemedText>3. After a Procedure</ThemedText>
               <ThemedText>4. After Touching a Patient</ThemedText>
@@ -297,7 +306,6 @@ export default function log() {
 
           </ThemedView>
         </Modal>
-      </ScrollView >
     </ThemedView >
   )
 }

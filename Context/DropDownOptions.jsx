@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 
 export function useDropDown() {
@@ -93,7 +93,7 @@ export function useDropDown() {
     useEffect(() => {
         async function loadGlove() {
             try{
-                const reqGlove = await fetch(`${API}/api/Gloves`);
+                const reqGlove = await fetch(`${API}/api/Glove`);
                 const glove = await reqGlove.json();
                 setGloveOptions(glove.map(g => ({ label: g.Glove, value: g.Glove })))
             }catch(err) {
