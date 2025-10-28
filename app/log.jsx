@@ -2,6 +2,7 @@ import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWit
 import React, { useEffect, useState } from 'react'
 
 import { useDropDown } from '../Context/DropDownOptions';
+import { useSubmit } from '../Context/SubmitResult';
 
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
@@ -41,27 +42,29 @@ export default function log() {
     auditorOptions,
     HCWOptions,
     momentOptions,
-    actionOptions,  
+    actionOptions,
     gloveOptions,
-    org,
-    setOrg,
-    department,
-    setDepartment
+    org, setOrg,
+    department, setDepartment,
+    auditor, setAuditor
   } = useDropDown();
 
-  const [auditor, setAuditor] = useState('');
+  const {
+    results, setResults
+  } = useSubmit();
 
-
-  const [HCW, setHCW] = useState('');
-  const [moment, setMoment] = useState('');
-  const [action, setAction] = useState('');
-  const [glove, setGlove] = useState('');
-  const [correctMoment, setCorrectMoment] = useState('');
+  const [HCW, setHCW] = useState(null);
+  const [moment, setMoment] = useState(null);
+  const [action, setAction] = useState(null);
+  const [glove, setGlove] = useState(null);
+  const [correctMoment, setCorrectMoment] = useState(null);
 
   const [warningModalVisible, setWarningModalVisible] = useState(false)
 
-  const [saveForm, setSaveForm] = useState(false);
   const [momentNo, setMomentNo] = useState(0);
+
+  // const [results, setResults] = useState([]);
+
 
   const onItemPress = () => {
     setExpanded(!expanded);
@@ -73,41 +76,37 @@ export default function log() {
   };
 
   function resetResultsArray() {
-    results = [];
+
   }
 
-  const saveFormDetails = () => {
-    try { 
 
-    }catch(error){
-      console.error(error.message)
-    }
-  }
 
   const resetDropDown = () => {
-    setHCW('');
-    setMoment('');
-    setAction('');
-    setGlove('');
-    setCorrectMoment('');
+    setHCW(null);
+    setMoment(null);
+    setAction(null);
+    setGlove(null);
+    setCorrectMoment(null);
   }
   const nextMoment = async () => {
     try {
-      if (HCW !== '' && moment !== '' && action !== '' && glove !== '' && correctMoment !== '') {
-        let result = {
-          HCW,
-          moment,
-          action,
-          glove,
-          correctMoment,
-        }
-        results.push(result);
+      if (HCW !== null && moment !== null && action !== null &&
+        glove !== null && correctMoment !== null) {
+        setResults(prev => [
+          ...prev,
+          {
+            HCW,
+            moment,
+            action,
+            glove,
+            correctMoment,
+          }
+        ]);
 
         //reset dropdown options 
         resetDropDown();
         setMomentNo(momentNo => momentNo + 1);
 
-        console.log(results)
       } else {
         setWarningModalVisible(true);
       }
@@ -115,6 +114,11 @@ export default function log() {
       console.log(error)
     }
   };
+
+  useEffect(() => {
+  console.log("UPDATED RESULTS:", results);
+}, [results]);
+
 
   useEffect(() => {
     const timeNow = new Date();
@@ -144,168 +148,168 @@ export default function log() {
 
   return (
     <ThemedView style={styles.container}>
+      <ThemedView>
+        <Spacer size={20} />
+        <ThemedText style={styles.title}> Hand Hygiene Observation Form</ThemedText>
+        <Spacer size={20} />
+      </ThemedView>
+
+      <ThemedView style={styles.formContainer}>
+        <Spacer size={10} />
+        <ThemedView style={styles.detailSection}>
+          <ThemedText style={styles.dropdownTitle}>Organisation: </ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownMainForm}
+            options={orgOptions}
+            selectedValue={org}
+            onValueChange={(value) => setOrg(value)}
+          />
+        </ThemedView>
+
+        <Spacer size={7} />
+
+        <ThemedView style={styles.detailSection}>
+          <ThemedText style={styles.dropdownTitle}>Department / Ward: </ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownMainForm}
+            options={deptOptions}
+            selectedValue={department}
+            onValueChange={(value) => setDepartment(value)}
+          />
+        </ThemedView>
+
+        <ThemedView style={styles.detailSection}>
+          <ThemedText style={styles.dropdownTitle}>Auditor</ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownMainForm}
+            options={auditorOptions}
+            selectedValue={auditor}
+            onValueChange={(value) => setAuditor(value)}
+          />
+        </ThemedView>
+      </ThemedView>
+
+      <Spacer size={13} />
+
+
+      <ThemedView style={styles.mommentBtnSection}>
+        <TouchableOpacity style={styles.mommentBtn} onPress={addMoments}>
+          <ThemedText style={styles.momentBtnText}>Add a moment</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+
+      <Spacer size={10} />
+
+      <ThemedView style={styles.timerSection}>
+        <ThemedText style={styles.time} >Date:</ThemedText>
+        <ThemedText style={styles.time}>{getFormattedDate()}</ThemedText>
+
+        <ThemedText style={styles.time}>Start time: </ThemedText>
+        <ThemedText style={styles.time}>{startTime ?? '--:--'}</ThemedText>
+      </ThemedView>
+
+
+      <ThemedView style={styles.timerButtonSection}>
+        <TouchableOpacity onPress={toggle} style={styles.button}>
+          <ThemedText style={styles.buttonText}>{isActive ? 'Pause Audit ' : 'Re-Start Audit '}</ThemedText>
+        </TouchableOpacity>
+        <ThemedText style={styles.time}>
+          {String(hours).padStart(2, '0')} h :
+          {String(mins).padStart(2, '0')} m :
+          {String(seconds).padStart(2, '0')} s
+        </ThemedText>
+      </ThemedView>
+
+      <TouchableWithoutFeedback onPress={onItemPress}>
+        <ThemedView style={styles.SectionII}>
+          <ThemedText style={{ paddingVertical: 15 }}>FIVE MOMENTS FOR HAND HYGIENE</ThemedText>
+          <CollapsableContainer expanded={expanded}>
+            <ThemedText>1. Before a Touching a Patient</ThemedText>
+            <ThemedText>2. Before a Procedure</ThemedText>
+            <ThemedText>3. After a Procedure</ThemedText>
+            <ThemedText>4. After Touching a Patient</ThemedText>
+            <ThemedText>5. After Touching Patient's Surroundings</ThemedText>
+          </CollapsableContainer>
+        </ThemedView>
+      </TouchableWithoutFeedback>
+
+      <Modal
+        animationType='slide'
+        transparent={false}
+        visible={showForm}
+        onRequestClose={() => {
+          setShowForm(!showForm);
+        }}>
+
+        <ThemedView style={styles.auditSection}>
+          <ThemedText style={styles.title}> Moment No. {momentNo}</ThemedText>
+
+          <ThemedText style={styles.dropdownText}>HCW code</ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownAuditForm}
+            options={HCWOptions}
+            selectedValue={HCW}
+            onValueChange={(value) => setHCW(value)} />
+
+          <ThemedText style={styles.dropdownText}>Moment</ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownAuditForm}
+            options={momentOptions}
+            selectedValue={moment}
+            onValueChange={(value) => setMoment(value)}
+          />
+
+          <ThemedText style={styles.dropdownText}>Action</ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownAuditForm}
+            options={actionOptions}
+            selectedValue={action}
+            onValueChange={(value) => setAction(value)}
+          />
+
+          <ThemedText style={styles.dropdownText}>Glove</ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownAuditForm}
+            options={gloveOptions}
+            selectedValue={glove}
+            onValueChange={(value) => setGlove(value)}
+          />
+
+          <ThemedText style={styles.dropdownText}> Correct Moment? </ThemedText>
+          <Dropdown
+            dropdownStyle={styles.dropdownAuditForm}
+            options={[
+              { label: 'Yes', value: 'Y' },
+              { label: 'No', value: 'N' },
+            ]}
+            selectedValue={correctMoment}
+            onValueChange={(value) => setCorrectMoment(value)}
+          />
+        </ThemedView>
+
         <ThemedView>
-          <Spacer size={20} />
-          <ThemedText style={styles.title}> Hand Hygiene Observation Form</ThemedText>
-          <Spacer size={20} />
-        </ThemedView>
-
-        <ThemedView style={styles.formContainer}>
           <Spacer size={10} />
-          <ThemedView style={styles.detailSection}>
-            <ThemedText style={styles.dropdownTitle}>Organisation: </ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownMainForm}
-              options={orgOptions}
-              selectedValue={org}
-              onValueChange={(value) => setOrg(value)}
-            />
-          </ThemedView>
 
-          <Spacer size={7}/>
+          <TouchableOpacity style={styles.mommentBtn} onPress={() => nextMoment()}>
+            <ThemedText>Next moment</ThemedText>
+            <ThemedView>
 
-          <ThemedView style={styles.detailSection}>
-            <ThemedText style={styles.dropdownTitle}>Department / Ward: </ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownMainForm}
-              options={deptOptions}
-              selectedValue={department}
-              onValueChange={(value) => setDepartment(value)}
-            />
-          </ThemedView>
-
-          <ThemedView style={styles.detailSection}>
-            <ThemedText style={styles.dropdownTitle}>Auditor</ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownMainForm}
-              options={auditorOptions}
-              selectedValue={auditor}
-              onValueChange={(value) => setAuditor(value)}
-            />
-          </ThemedView>
-        </ThemedView>
-
-        <Spacer size={13}/>
-
-
-        <ThemedView style={styles.mommentBtnSection}>
-          <TouchableOpacity style={styles.mommentBtn} onPress={addMoments}>
-            <ThemedText style={styles.momentBtnText}>Add a moment</ThemedText>
+              <ModalAlert
+                visible={warningModalVisible}
+                onClose={() => setWarningModalVisible(false)}>
+                All Fields are required!
+              </ModalAlert>
+            </ThemedView>
           </TouchableOpacity>
-        </ThemedView>
 
-        <Spacer size={10}/>
+          <Spacer size={10} />
 
-        <ThemedView style={styles.timerSection}>
-          <ThemedText style={styles.time} >Date:</ThemedText>
-          <ThemedText style={styles.time}>{getFormattedDate()}</ThemedText>
-
-          <ThemedText style={styles.time}>Start time: </ThemedText>
-          <ThemedText style={styles.time}>{startTime ?? '--:--'}</ThemedText>
-        </ThemedView>
-
-
-        <ThemedView style={styles.timerButtonSection}>
-          <TouchableOpacity onPress={toggle} style={styles.button}>
-            <ThemedText style={styles.buttonText}>{isActive ? 'Pause Audit ' : 'Re-Start Audit '}</ThemedText>
+          <TouchableOpacity onPress={resetResultsArray()} style={styles.mommentBtn}>
+            <ThemedText>Save & Exit</ThemedText>
           </TouchableOpacity>
-          <ThemedText style={styles.time}>
-            {String(hours).padStart(2, '0')} h :
-            {String(mins).padStart(2, '0')} m :
-            {String(seconds).padStart(2, '0')} s
-          </ThemedText>
+
         </ThemedView>
-
-        <TouchableWithoutFeedback onPress={onItemPress}>
-          <ThemedView style={styles.SectionII}>
-            <ThemedText style={{ paddingVertical: 15 }}>FIVE MOMENTS FOR HAND HYGIENE</ThemedText>
-            <CollapsableContainer expanded={expanded}>
-              <ThemedText>1. Before a Touching a Patient</ThemedText>          
-              <ThemedText>2. Before a Procedure</ThemedText>
-              <ThemedText>3. After a Procedure</ThemedText>
-              <ThemedText>4. After Touching a Patient</ThemedText>
-              <ThemedText>5. After Touching Patient's Surroundings</ThemedText>
-            </CollapsableContainer>
-          </ThemedView>
-        </TouchableWithoutFeedback>
-
-        <Modal
-          animationType='slide'
-          transparent={false}
-          visible={showForm}
-          onRequestClose={() => {
-            setShowForm(!showForm);
-          }}>
-
-          <ThemedView style={styles.auditSection}>
-            <ThemedText style={styles.title}> Moment No. {momentNo}</ThemedText>
-
-            <ThemedText style={styles.dropdownText}>HCW code</ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownAuditForm}
-              options={HCWOptions}
-              selectedValue={HCW}
-              onValueChange={(value) => setHCW(value)} />
-
-            <ThemedText style={styles.dropdownText}>Moment</ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownAuditForm}
-              options={momentOptions}
-              selectedValue={moment}
-              onValueChange={(value) => setMoment(value)}
-            />
-
-            <ThemedText style={styles.dropdownText}>Action</ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownAuditForm}
-              options={actionOptions}
-              selectedValue={action}
-              onValueChange={(value) => setAction(value)}
-            />
-
-            <ThemedText style={styles.dropdownText}>Glove</ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownAuditForm}
-              options={gloveOptions}
-              selectedValue={glove}
-              onValueChange={(value) => setGlove(value)}
-            />
-
-            <ThemedText style={styles.dropdownText}> Correct Moment? </ThemedText>
-            <Dropdown
-              dropdownStyle={styles.dropdownAuditForm}
-              options={[
-                { label: 'Yes', value: 'Y' },
-                { label: 'No', value: 'N' },
-              ]}
-              selectedValue={correctMoment}
-              onValueChange={(value) => setCorrectMoment(value)}
-            />
-          </ThemedView>
-
-          <ThemedView>
-            <Spacer size={10} />
-
-            <TouchableOpacity style={styles.mommentBtn} onPress={() => nextMoment()}>
-              <ThemedText>Next moment</ThemedText>
-              <ThemedView>
-
-                <ModalAlert
-                  visible={warningModalVisible}
-                  onClose={() => setWarningModalVisible(false)}>
-                  All Fields are required!
-                </ModalAlert>
-              </ThemedView>
-            </TouchableOpacity>
-
-            <Spacer size={10} />
-
-            <TouchableOpacity onPress={resetResultsArray()} style={styles.mommentBtn}>
-              <ThemedText>Save & Exit</ThemedText>
-            </TouchableOpacity>
-
-          </ThemedView>
-        </Modal>
+      </Modal>
     </ThemedView >
   )
 }

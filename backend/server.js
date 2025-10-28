@@ -8,27 +8,25 @@ import momentRoutes from './routes/moments.routes.js';
 import actionRoutes from './routes/actions.routes.js';
 import gloveRoutes from './routes/gloves.routes.js';
 
+import resultRoutes from './routes/results.routes.js';
+import resultSetsRoutes from './routes/resultSets.routes.js';
+
 const app = express();
 
 app.use('/api/Organisation', orgRoutes)
 
-
 app.use('/api/Department', deptRoutes)
-
 
 app.use('/api/Auditors', auditorRoutes)
 
-
 app.use('/api/HCW', HCWRoutes)
-
-
 app.use('/api/Moments', momentRoutes) 
-
-
 app.use('/api/Actions', actionRoutes)
-
-
 app.use('/api/Glove', gloveRoutes)
+
+app.use('/api/Result', resultRoutes)
+app.use('/api/ResultSets', resultSetsRoutes)
+app.use('/api/ResultSetCount', resultSetsRoutes)
 
 
 app.listen(3000, () => console.log('API running on http://localhost:3000'));

@@ -1,16 +1,34 @@
-import express from 'express';
-import cors from 'cors';
-import { getDatas } from '../DB.js';
+import { Router } from 'express';
+import { getDatas, getDatawithID } from '../DB.js';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
-app.get('/api/ResultSets', async (req, res) => {
+router.get('/', async (req, res) => {
   try{ 
-    const ResultSets = await getDatas('ResultSets');
-    res.json(ResultSets);
+    const resultSets = await getDatas('ResultSets');
+    res.json(resultSets);
   }catch(err) {
     res.status(500).json({ error: 'Database Error'});
   }
 });
+
+router.get('/:SetID' , async (req, res) => {
+  try{
+    const resultSet = Number(req.params.SetID); 
+    const set = await getDatawithID('ResultSets', 'SetID', resultSet)
+    res.json(set);
+  }catch(err){
+    res.status(500).json({ error: 'Database Error'});
+  }
+}); 
+
+router.get('/', async (req, res) => {
+  try{
+    const resultSetsCount = await countRows('ResultSets'); 
+    res.json(resultSetsCount);
+  }catch(err) {
+    res.status(500).json({ error: 'Database Error'});
+  }
+})
+
+export default router; 

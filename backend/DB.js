@@ -31,28 +31,16 @@ export async function getDatas(tableName) {
   }
 }
 
-export async function getDepts(OrgID) {
-  try {
+export async function getDatawithID(tableName, idName, id){
+  try{
     const result = await pool.request()
-      .input('OrgID', sql.Int, OrgID)
-      .query(`SELECT * FROM Department
-            WHERE OrgID = @OrgID`);
-    return result.recordset;
-  } catch (error) {
+      .input(idName, sql.Int, id)
+      .query(`SELECT * FROM ${tableName}
+              WHERE ${idName} = @${idName}`);
+      return result.recordset;
+  }catch(error) {
     console.error(error);
-    throw error;
-  }
-};
-
-export async function getAuditors(DeptCode) {
-  try {
-    const result = await pool.request()
-      .input('DeptCode', sql.Int, DeptCode)
-      .query(`SELECT * FROM Auditor
-                WHERE DeptCode = @DeptCode`);
-    return result.recordset;
-  } catch (error) {
-    console.error(error.message);
+    throw error; 
   }
 }
 
@@ -109,31 +97,35 @@ export async function getGlove() {
   }
 }
 
-// ***************** examples of how to get results************ 
-/* async function getAllOrgs() {
-    const result = await pool.request()
-        .query('SELECT * FROM Organisation');
-    return result.recordset
+export async function postResults( SetID, HCW, Moment, Action, Glove, CorrectMoment ){
+  try{
+    const result = await pool.request() 
+      .input("SetID", sql.Int, SetID)
+      .input("HCW", sql.VarChar, HCW)
+      .input("Moment", sql.Int, Moment)
+      .input("Action", sql.VarChar, Action)
+      .input("Glove", sql.VarChar, Glove)
+      .input("CorrectMoment", sql.VarChar, CorrectMoment)
+      .query(` 
+        INSERT INTO Result
+        VALUES
+        (@SetID, @HCW, @Moment, @Action, @Glove, @CorrectMoment)
+        OUTPUT INSERTED.SetID
+        `);
+
+      return result.recordset[0].SetID; 
+  }catch(error) {
+    console.error(error.message);
+  }
 }
 
-async function getOrg(id) {
+export async function countRows(tableName){
+  try{ 
     const result = await pool.request()
-        .input('id', sql.Int, id)
-        .query('SELECT * FROM Organisation WHERE OrgID = @id');
-    return result.recordset
-
-    app.get('/Organisation', async (req, res) => {
-  try {
-    const result = await pool.request().query('SELECT * FROM Organisation');
-    res.json(result.recordset);
-  } catch (err) {
-    res.status(500).send(err.message);
+    .query(`SELECT COUNT(*) FROM ${tableName}`)
+    return result.recordset[0].total;
+  }catch(error){
+    console.error(error.message)
   }
-});
-app.listen(3000, () => console.log('Server running on http://localhost:3000/Organisation'));
-
-
-*/
-
-
+}
 

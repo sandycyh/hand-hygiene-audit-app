@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
-
 export function useDropDown() {
     const [orgOptions, setOrgOptions] = useState([]);
     const [deptOptions, setDeptOptions] = useState([]);
     const [auditorOptions, setAuditorOptions] = useState([]);
     const [org, setOrg] = useState(null);
     const [department, setDepartment] = useState(null);
+    const [auditor, setAuditor] = useState(null);
     
     const [HCWOptions, setHCWOptions] = useState([]);
     const [momentOptions, setMomentOptions] = useState([]);
     const [actionOptions, setActionOptions] = useState([]);
     const [gloveOptions, setGloveOptions] = useState([]);
 
-    const API = 'http://192.168.0.243:3000';
+    const API = process.env.EXPO_PUBLIC_API_URL;
 
     useEffect(() => {
         async function loadOrg() {
@@ -106,13 +106,16 @@ export function useDropDown() {
     return { orgOptions, 
             deptOptions, 
             auditorOptions, 
-            org, department, 
-            setOrg, 
-            setDepartment, 
             HCWOptions,  
             momentOptions, 
             actionOptions, 
-            gloveOptions
+            gloveOptions,
+            org, 
+            department, 
+            auditor,
+            setOrg, 
+            setDepartment, 
+            setAuditor,            
         }
 }
 

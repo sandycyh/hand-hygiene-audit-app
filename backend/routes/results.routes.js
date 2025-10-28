@@ -1,16 +1,37 @@
-import express from 'express';
-import cors from 'cors';
-import { getDatas } from '../DB.js';
+import { Router } from 'express';
+import { getDatawithID, postResults } from '../DB.js';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
-app.get('/api/Results', async (req, res) => {
-  try{ 
-    const Results = await getDatas('Results');
-    res.json(Results);
-  }catch(err) {
-    res.status(500).json({ error: 'Database Error'});
+router.get('/:setID', async (req, res) => {
+  try {
+    const setID = Number(req.params.setID);
+    const results = await getDatawithID('Result', 'SetID', setID);
+
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: 'Database Error' });
   }
 });
+
+router.post('/', async (req, res) => {
+  try {
+    const { SetID, HCW, Moment, Action, Glove, CorrectMoment } = req.body;
+    if (!SetID || !HCW || !Moment || !Action || !Glove || !CorrectMoment)
+      return res.status(400).json({ error: "Result details required " });
+
+    const result = await postResults({
+      SetID,
+      HCW,
+      Moment,
+      Action,
+      Glove,
+      CorrectMoment
+    })
+    res.status(201).json({ message: 'Result created', setID: result })
+  } catch (err) {
+    res.status(500).json({ error: 'Database Error' });
+  }
+})
+
+export default router; 

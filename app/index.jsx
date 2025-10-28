@@ -1,3 +1,4 @@
+console.log("ENTRY FILE RUNNING");
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router';
 import { Link } from "expo-router";
