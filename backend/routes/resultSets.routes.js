@@ -12,6 +12,15 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/count/all', async (req, res) => {
+  try{
+    const resultSetsCount = await countRows('ResultSets'); 
+    res.json(resultSetsCount);
+  }catch(err) {
+    res.status(500).json({ error: 'Database Error'});
+  }
+})
+
 router.get('/:SetID' , async (req, res) => {
   try{
     const resultSet = Number(req.params.SetID); 
@@ -22,13 +31,9 @@ router.get('/:SetID' , async (req, res) => {
   }
 }); 
 
-router.get('/', async (req, res) => {
-  try{
-    const resultSetsCount = await countRows('ResultSets'); 
-    res.json(resultSetsCount);
-  }catch(err) {
-    res.status(500).json({ error: 'Database Error'});
-  }
-})
+// router.get('/', async (req, res) => {
+//   try{
 
+//   }
+// })
 export default router; 

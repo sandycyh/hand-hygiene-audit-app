@@ -31,16 +31,16 @@ export async function getDatas(tableName) {
   }
 }
 
-export async function getDatawithID(tableName, idName, id){
-  try{
+export async function getDatawithID(tableName, idName, id) {
+  try {
     const result = await pool.request()
       .input(idName, sql.Int, id)
       .query(`SELECT * FROM ${tableName}
               WHERE ${idName} = @${idName}`);
-      return result.recordset;
-  }catch(error) {
+    return result.recordset;
+  } catch (error) {
     console.error(error);
-    throw error; 
+    throw error;
   }
 }
 
@@ -66,7 +66,7 @@ export async function getHCW() {
 }
 
 export async function getAction() {
-  try{
+  try {
     const result = await pool.request()
       .query(`SELECT * FROM Action_Descriptions
               ORDER BY 
@@ -75,14 +75,14 @@ export async function getAction() {
                       ELSE 3
                 END, 
                 Action `)
-    return result.recordset; 
-  }catch(error) {
+    return result.recordset;
+  } catch (error) {
     console.error(error.message);
   }
 }
 
 export async function getGlove() {
-  try{
+  try {
     const result = await pool.request()
       .query(`SELECT * FROM Glove_Descriptions
               ORDER BY 
@@ -92,39 +92,73 @@ export async function getGlove() {
                 END,
                 Glove`)
     return result.recordset;
-  }catch(error) {
+  } catch (error) {
     console.error(error.message);
   }
 }
 
-export async function postResults( SetID, HCW, Moment, Action, Glove, CorrectMoment ){
-  try{
-    const result = await pool.request() 
+export async function postResults({ SetID, HCW, Moment, Action, Glove, CorrectMoment }) {
+  try {
+    console.log("POSTING TO DB:", { SetID, HCW, Moment, Action, Glove, CorrectMoment });
+
+    const result = await pool.request()
       .input("SetID", sql.Int, SetID)
-      .input("HCW", sql.VarChar, HCW)
+      .input("HCW", sql.VarChar(3), HCW)
       .input("Moment", sql.Int, Moment)
-      .input("Action", sql.VarChar, Action)
-      .input("Glove", sql.VarChar, Glove)
-      .input("CorrectMoment", sql.VarChar, CorrectMoment)
-      .query(` 
-        INSERT INTO Result
-        VALUES
-        (@SetID, @HCW, @Moment, @Action, @Glove, @CorrectMoment)
-        OUTPUT INSERTED.SetID
+      .input("Action", sql.VarChar(10), Action)
+      .input("Glove", sql.VarChar(4), Glove)
+      .input("CorrectMoment", sql.VarChar(3), CorrectMoment)
+      .query(`
+          INSERT INTO Result (SetID, HCW, Moment, [Action], Glove, CorrectMoment)
+          OUTPUT INSERTED.*
+          VALUES (@SetID, @HCW, @Moment, @Action, @Glove, @CorrectMoment)
         `);
 
-      return result.recordset[0].SetID; 
-  }catch(error) {
+    console.log("INSERT SUCCESS:", result.recordset);
+    // return the inserted row to the caller (if needed)
+    return result.recordset && result.recordset[0];
+
+  } catch (error) {
     console.error(error.message);
+    // rethrow so callers can handle/report the failure
+    throw error;
   }
 }
 
-export async function countRows(tableName){
-  try{ 
+export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime, OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate }) {
+  try {
     const result = await pool.request()
-    .query(`SELECT COUNT(*) FROM ${tableName}`)
-    return result.recordset[0].total;
-  }catch(error){
+      .input("SetID", sql.Int, SetID)
+      .input("AuditDate", sql.Date, AuditDate)
+      .input("StartTime", sql.Time(7), StartTime)
+      .input("TotalTime", sql.Time(7), TotalTime)
+      .input("OrgID", sql.Int, OrgID)
+      .input("DeptCode", sql.VarChar(10), DeptCode)
+      .input("AuditedBy", sql.Int, AuditedBy)
+      .input("TotalCorrectMoment", sql.Int, TotalCorrectMoment)
+      .input("TotalMoment", sql.Int, TotalMoment)
+      .input("SuccessRate", sql.Decimal(18, 0), SuccessRate)
+      .query(`
+          INSERT INT ResultSets (SetID, AuditDate, StartTime, TotalTime, OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate)
+          OUTPUT INSERTED. *
+          VALUES (@SetID, @AuditDate, @StartTime, @TotalTime, @OrgID, @DeptCode, @AuditedBy, @TotalCorrectMoment, @TotalMoment, @SuccessRate)
+          `)
+          
+    console.log("INSERT SUCCESS:", result.recordset);
+    // return the inserted row to the caller (if needed)
+    return result.recordset && result.recordset[0];
+
+  } catch (error) {
+    console.error(error.message);
+    throw error;
+  }
+}
+export async function countRows(tableName) {
+  try {
+    const result = await pool.request()
+      .query(`SELECT COUNT(*) AS total FROM ${tableName}`)
+    return result.recordset[0].Total;
+  } catch (error) {
     console.error(error.message)
   }
 }

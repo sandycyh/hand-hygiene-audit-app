@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from "cors";
 
 import orgRoutes from './routes/org.routes.js';
 import deptRoutes from './routes/departments.routes.js';
@@ -12,6 +13,8 @@ import resultRoutes from './routes/results.routes.js';
 import resultSetsRoutes from './routes/resultSets.routes.js';
 
 const app = express();
+app.use(cors());
+app.use(express.json());  
 
 app.use('/api/Organisation', orgRoutes)
 
@@ -26,7 +29,6 @@ app.use('/api/Glove', gloveRoutes)
 
 app.use('/api/Result', resultRoutes)
 app.use('/api/ResultSets', resultSetsRoutes)
-app.use('/api/ResultSetCount', resultSetsRoutes)
 
 
 app.listen(3000, () => console.log('API running on http://localhost:3000'));

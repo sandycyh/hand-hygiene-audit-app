@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDatawithID, postResults } from '../DB.js';
+import { getDatawithID, getDatas, postResults } from '../DB.js';
 
 const router = Router();
 
@@ -14,24 +14,57 @@ router.get('/:setID', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { SetID, HCW, Moment, Action, Glove, CorrectMoment } = req.body;
-    if (!SetID || !HCW || !Moment || !Action || !Glove || !CorrectMoment)
-      return res.status(400).json({ error: "Result details required " });
+    const results = await getDatas('Result');
 
-    const result = await postResults({
-      SetID,
-      HCW,
-      Moment,
-      Action,
-      Glove,
-      CorrectMoment
-    })
-    res.status(201).json({ message: 'Result created', setID: result })
+    res.json(results);
   } catch (err) {
     res.status(500).json({ error: 'Database Error' });
   }
-})
+});
+
+router.post('/', async (req, res) => {
+  try {
+    const resultsArray = req.body.payload || req.body;
+
+    if (!Array.isArray(resultsArray) || resultsArray.length === 0) {
+      return res.status(400).json({ error: "Payload must be an array of results" });
+    }
+
+    console.log("POST /api/Result BODY:", resultsArray);
+
+    const inserted = [];
+    for (const r of resultsArray) {
+      const row = await postResults(r); // pass object
+      inserted.push(row);
+    }
+
+    res.status(201).json({
+      message: `${inserted.length} results inserted successfully.`,
+      inserted,
+    });
+
+  } catch (err) {
+    console.error("POST ROUTE ERROR:", err);
+    res.status(500).json({ error: "Database Error" });
+  }
+});
+
+// router.post('/', async (req, res) => {
+//   try {
+//     console.log("POST /api/Results BODY:", req.body);
+//     // const { SetID, HCW, Moment, Action, Glove, CorrectMoment } = req.body;
+//     // if (!SetID || !HCW || !Moment || !Action || !Glove || !CorrectMoment)
+//     //   return res.status(400).json({ error: "Result details required " });
+
+//     const inserted = await postResults(SetID, HCW, Moment, Action, Glove, CorrectMoment);
+//     const result = await postResults({inserted})
+
+//     res.status(201).json({ message: 'Result created', setID: result })
+//   } catch (err) {
+//     res.status(500).json({ error: 'Database Error' });
+//   }
+// })
 
 export default router; 

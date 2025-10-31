@@ -7,11 +7,12 @@ export function useDropDown() {
     const [org, setOrg] = useState(null);
     const [department, setDepartment] = useState(null);
     const [auditor, setAuditor] = useState(null);
-    
+
     const [HCWOptions, setHCWOptions] = useState([]);
     const [momentOptions, setMomentOptions] = useState([]);
     const [actionOptions, setActionOptions] = useState([]);
     const [gloveOptions, setGloveOptions] = useState([]);
+    const [setID, setSetID] = useState(null);
 
     const API = process.env.EXPO_PUBLIC_API_URL;
 
@@ -53,11 +54,11 @@ export function useDropDown() {
 
     useEffect(() => {
         async function loadHCW() {
-            try{
+            try {
                 const reqHCW = await fetch(`${API}/api/HCW`);
                 const HCW = await reqHCW.json();
-                setHCWOptions(HCW.map(h => ({ label: `${h.Type} - ${h.Description}`, value: h.Type})))
-            }catch (err) {
+                setHCWOptions(HCW.map(h => ({ label: `${h.Type} - ${h.Description}`, value: h.Type })))
+            } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
         }
@@ -66,11 +67,11 @@ export function useDropDown() {
 
     useEffect(() => {
         async function loadMoment() {
-            try{
+            try {
                 const reqMoment = await fetch(`${API}/api/Moments`);
                 const moment = await reqMoment.json();
-                setMomentOptions(moment.map(m => ({ label: `${m.Moment} - ${m.Title}`, value: m.Moment})))
-            }catch (err) {
+                setMomentOptions(moment.map(m => ({ label: `${m.Moment} - ${m.Title}`, value: m.Moment })))
+            } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
         }
@@ -79,11 +80,11 @@ export function useDropDown() {
 
     useEffect(() => {
         async function loadAction() {
-            try{ 
-                const reqAction = await fetch(`${API}/api/Actions`); 
+            try {
+                const reqAction = await fetch(`${API}/api/Actions`);
                 const action = await reqAction.json();
-                setActionOptions(action.map(a => ({ label: a.Action, value: a.Action})))
-            }catch(err) {
+                setActionOptions(action.map(a => ({ label: a.Action, value: a.Action })))
+            } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
         }
@@ -92,31 +93,30 @@ export function useDropDown() {
 
     useEffect(() => {
         async function loadGlove() {
-            try{
+            try {
                 const reqGlove = await fetch(`${API}/api/Glove`);
                 const glove = await reqGlove.json();
                 setGloveOptions(glove.map(g => ({ label: g.Glove, value: g.Glove })))
-            }catch(err) {
+            } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
         }
         loadGlove();
     }, []);
 
-    return { orgOptions, 
-            deptOptions, 
-            auditorOptions, 
-            HCWOptions,  
-            momentOptions, 
-            actionOptions, 
-            gloveOptions,
-            org, 
-            department, 
-            auditor,
-            setOrg, 
-            setDepartment, 
-            setAuditor,            
-        }
+    return {
+        orgOptions,
+        deptOptions,
+        auditorOptions,
+        HCWOptions,
+        momentOptions,
+        actionOptions,
+        gloveOptions,
+        org, setOrg,
+        department, setDepartment,
+        auditor, setAuditor,
+        setID, setSetID
+    }
 }
 
 

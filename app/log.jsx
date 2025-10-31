@@ -75,8 +75,8 @@ export default function log() {
     setMomentNo(momentNo => results.length + 1);
   };
 
-  function resetResultsArray() {
-
+  function saveAndExit() {
+    setShowForm(false);
   }
 
 
@@ -279,8 +279,8 @@ export default function log() {
           <Dropdown
             dropdownStyle={styles.dropdownAuditForm}
             options={[
-              { label: 'Yes', value: 'Y' },
-              { label: 'No', value: 'N' },
+              { label: 'Yes', value: 'Yes' },
+              { label: 'No', value: 'No' },
             ]}
             selectedValue={correctMoment}
             onValueChange={(value) => setCorrectMoment(value)}
@@ -304,7 +304,7 @@ export default function log() {
 
           <Spacer size={10} />
 
-          <TouchableOpacity onPress={resetResultsArray()} style={styles.mommentBtn}>
+          <TouchableOpacity onPress={() => {saveAndExit()}} style={styles.mommentBtn}>
             <ThemedText>Save & Exit</ThemedText>
           </TouchableOpacity>
 
