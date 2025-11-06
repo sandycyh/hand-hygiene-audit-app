@@ -1,10 +1,12 @@
-import React, { useState, createContext, useContext, act } from 'react';
-
+import React, { useState, createContext, useContext } from 'react';
+import { useDropDown } from '../Context/DropDownOptions';
+ 
 const SubmitContext = createContext();
 
 export function SubmitProvider({ children }) {
     const API = process.env.EXPO_PUBLIC_API_URL;
-    var [results, setResults] = useState([]);
+    const [results, setResults] = useState([]);
+    const { org, department, auditor } = useDropDown();
 
     let setID = null;
 

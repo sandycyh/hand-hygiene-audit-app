@@ -97,9 +97,11 @@ export async function getGlove() {
   }
 }
 
-export async function postResults({ SetID, HCW, Moment, Action, Glove, CorrectMoment }) {
+export async function postResults({ SetID, HCW, Moment, Action, Glove, 
+                                    CorrectMoment }) {
   try {
-    console.log("POSTING TO DB:", { SetID, HCW, Moment, Action, Glove, CorrectMoment });
+    console.log("POSTING TO DB:", { SetID, HCW, Moment, Action, Glove, 
+                                    CorrectMoment });
 
     const result = await pool.request()
       .input("SetID", sql.Int, SetID)
@@ -125,7 +127,8 @@ export async function postResults({ SetID, HCW, Moment, Action, Glove, CorrectMo
   }
 }
 
-export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime, OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate }) {
+export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime, 
+  OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate }) {
   try {
     const result = await pool.request()
       .input("SetID", sql.Int, SetID)

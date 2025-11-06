@@ -3,40 +3,51 @@ import React, { useEffect, useState } from 'react'
 
 import { useDropDown } from '../Context/DropDownOptions';
 import { useSubmit } from '../Context/SubmitResult';
+import { useConfirmSubmit } from '../Context/ConfirmSubmit';
 
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
 import Spacer from '@/components/ui/Spacer';
 import Dropdown from 'react-native-input-select';
 import CollapsableContainer from '@/components/CollapsableContainer';
+import ModalConfirm from '../components/ModalConfirm';
 import ModalAlert from '../components/ModalAlert';
 
-const getFormattedDate = () => {
-  const curDate = new Date();
-  const day = String(curDate.getDate()).padStart(2, '0');
-  const month = String(curDate.getMonth() + 1).padStart(2, '0');
-  const year = curDate.getFullYear();
-  return `${day}-${month}-${year}`;
-};
 
-
-const timerCount = (time) => {
-  const hours = Math.floor(time / 3600);
-  const mins = Math.floor((time % 3600) / 60);
-  const seconds = Math.floor((time % 60));
-  return { hours, mins, seconds };
-}
-
-let results = [];
 
 export default function log() {
+
+  const getFormattedDate = () => {
+    const curDate = new Date();
+    const day = String(curDate.getDate()).padStart(2, '0');
+    const month = String(curDate.getMonth() + 1).padStart(2, '0');
+    const year = curDate.getFullYear();
+    if (!date) {
+      setDate(`${day}-${month}-${year}`);
+    }
+    return (`${day}-${month}-${year}`);
+  };
+
+  const timerCount = (time) => {
+    const hours = Math.floor(time / 3600);
+    const mins = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor((time % 60));
+    return { hours, mins, seconds };
+  }
+
+  const [date, setDate] = useState(null);
   const [timer, setTimer] = useState(0);
+  const [totalTime, setTotalTime] = useState(null);
   const [isActive, setIsActive] = useState(true);
   const { hours, mins, seconds } = timerCount(timer);
   const [startTime, setStartTime] = useState(null);
-
   const [expanded, setExpanded] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [auditSetDetails, setAuditSetDetails] = useState({});
+  const { confirmSubmitModal, setConfirmSubmitModal, 
+        updateAuditSet, setUpdateAuditSet
+   } = useConfirmSubmit();
+
   const { orgOptions,
     deptOptions,
     auditorOptions,
@@ -46,11 +57,12 @@ export default function log() {
     gloveOptions,
     org, setOrg,
     department, setDepartment,
-    auditor, setAuditor
+    auditor, setAuditor,
   } = useDropDown();
 
   const {
-    results, setResults
+    results, setResults,
+    auditSet, setAuditSet
   } = useSubmit();
 
   const [HCW, setHCW] = useState(null);
@@ -58,13 +70,21 @@ export default function log() {
   const [action, setAction] = useState(null);
   const [glove, setGlove] = useState(null);
   const [correctMoment, setCorrectMoment] = useState(null);
-
+  const [TotalCorrectMoment, setTotalCorrectMoment] = useState(0)
+  ;
+  const [warningEmptyAuditVisible, setWarningEmptyAuditVisible] = useState(false);
   const [warningModalVisible, setWarningModalVisible] = useState(false)
-
   const [momentNo, setMomentNo] = useState(0);
 
-  // const [results, setResults] = useState([]);
+  const getTotalCorrectMoment = () => {
+    const total = results.filter(r => r.correctMoment === 'Yes').length;
+    return setTotalCorrectMoment(total)
+  };
 
+  const getSuccessRate = () => {
+    if (results.length === 0) return 0;
+    return ((TotalCorrectMoment / results.length) * 100).toFixed(2);
+  }
 
   const onItemPress = () => {
     setExpanded(!expanded);
@@ -79,8 +99,6 @@ export default function log() {
     setShowForm(false);
   }
 
-
-
   const resetDropDown = () => {
     setHCW(null);
     setMoment(null);
@@ -88,6 +106,8 @@ export default function log() {
     setGlove(null);
     setCorrectMoment(null);
   }
+
+
   const nextMoment = async () => {
     try {
       if (HCW !== null && moment !== null && action !== null &&
@@ -115,10 +135,52 @@ export default function log() {
     }
   };
 
-  useEffect(() => {
-  console.log("UPDATED RESULTS:", results);
-}, [results]);
+  const onConfirm = () => {
+    console.log('confirmSubmitModal is:', setConfirmSubmitModal)
+    if (!org || !department || !auditor) {
+      console.log('theres nothing to log!')
+      setWarningModalVisible(true);
+      setConfirmSubmitModal(false);
+      return;``
+    } else if (results.length === 0) {
+      console.log('Empty Audit set!')
+      setWarningEmptyAuditVisible(true);
+      setConfirmSubmitModal(false);
+      return;
+    }
+    else {
+      setAuditSetDetails({
+        date,
+        startTime,
+        org,
+        department,
+        auditor
+      })
+      setUpdateAuditSet(true);
+      setConfirmSubmitModal(false);
+      console.log('audit set details:', auditSetDetails);
+    }
 
+  }
+  useEffect(() => {
+    console.log("UPDATED RESULTS:", results);
+  }, [results]);
+
+  useEffect(() => {
+    if (!org || !department || !auditor) {
+      console.log('theres nothing!')
+      return;
+    }
+    setAuditSetDetails({
+      date,
+      startTime,
+      org,
+      department,
+      auditor
+    })
+    console.log('audit set details:', auditSetDetails);
+
+  }, [org, department, auditor]);
 
   useEffect(() => {
     const timeNow = new Date();
@@ -188,6 +250,25 @@ export default function log() {
           />
         </ThemedView>
       </ThemedView>
+
+      <ModalConfirm
+        visible={confirmSubmitModal}
+        onConfirm={onConfirm}
+        onClose={() => setConfirmSubmitModal(false)}>
+        <ThemedText>Confirm Submit ?</ThemedText>
+      </ModalConfirm>
+
+      <ModalAlert
+        visible={warningModalVisible}
+        onClose={() => setWarningModalVisible(false)}>
+        All Fields are required!
+      </ModalAlert>
+      
+      <ModalAlert
+        visible={warningEmptyAuditVisible}
+        onClose={() => setWarningEmptyAuditVisible(false)}>
+        Please add at least one moment before submitting!
+      </ModalAlert>
 
       <Spacer size={13} />
 
@@ -304,7 +385,7 @@ export default function log() {
 
           <Spacer size={10} />
 
-          <TouchableOpacity onPress={() => {saveAndExit()}} style={styles.mommentBtn}>
+          <TouchableOpacity onPress={() => { saveAndExit() }} style={styles.mommentBtn}>
             <ThemedText>Save & Exit</ThemedText>
           </TouchableOpacity>
 
@@ -419,7 +500,8 @@ const styles = StyleSheet.create({
     textAlign: 'flex-start',
     justifyContent: 'flex-start',
     padding: 5,
-
+    minHeight: 56,
+    height: 56
   },
   dropdownText: {
     fontSize: 14,

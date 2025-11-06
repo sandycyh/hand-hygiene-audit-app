@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import ThemedText from './ui/ThemedText';
 import Spacer from '@/components/ui/Spacer';
 
-const ModalAlert = ({ children, visible, onClose }) => {
+const ModalConfirm = ({ children, visible, onConfirm, onClose }) => {
     return (
         <Modal transparent visible={visible} animationType='fade'>
             <View style={styles.container}>
@@ -12,16 +12,25 @@ const ModalAlert = ({ children, visible, onClose }) => {
                     <Spacer size={10} />
                     <ThemedText> {children} </ThemedText>
                     <Spacer size={35} />
-                        <Pressable onPress={onClose} style={styles.button}>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between', 
+                        width: '80%'
+                    }}>
+                        <Pressable onPress={onConfirm} style={styles.button}>
                             <ThemedText style={styles.text}>Confirm</ThemedText>
+                        </Pressable>
+                        <Pressable onPress={onClose} style={styles.button}>
+                            <ThemedText style={styles.text}>Cancel</ThemedText>
                         </Pressable>
                     </View>
                 </View>
+            </View>
         </Modal>
     )
 }
 
-export default ModalAlert
+export default ModalConfirm
 
 const styles = StyleSheet.create({
     container: {
@@ -48,6 +57,7 @@ const styles = StyleSheet.create({
     },
     button: {
         justifyContent: 'center',
+        flexDirection: 'row',
         backgroundColor: '#b5b0e6ff',
         borderRadius: 7,
         paddingHorizontal: 10,

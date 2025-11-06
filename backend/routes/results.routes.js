@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 router.post('/', async (req, res) => {
   try {
     const resultsArray = req.body.payload || req.body;
@@ -51,20 +52,5 @@ router.post('/', async (req, res) => {
   }
 });
 
-// router.post('/', async (req, res) => {
-//   try {
-//     console.log("POST /api/Results BODY:", req.body);
-//     // const { SetID, HCW, Moment, Action, Glove, CorrectMoment } = req.body;
-//     // if (!SetID || !HCW || !Moment || !Action || !Glove || !CorrectMoment)
-//     //   return res.status(400).json({ error: "Result details required " });
-
-//     const inserted = await postResults(SetID, HCW, Moment, Action, Glove, CorrectMoment);
-//     const result = await postResults({inserted})
-
-//     res.status(201).json({ message: 'Result created', setID: result })
-//   } catch (err) {
-//     res.status(500).json({ error: 'Database Error' });
-//   }
-// })
 
 export default router; 
