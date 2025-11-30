@@ -1,23 +1,52 @@
 import React, { useState, createContext, useContext } from 'react';
-import { useDropDown } from '../Context/DropDownOptions';
- 
+
 const SubmitContext = createContext();
 
 export function SubmitProvider({ children }) {
     const API = process.env.EXPO_PUBLIC_API_URL;
     const [results, setResults] = useState([]);
-    const { org, department, auditor } = useDropDown();
+    const [auditSet, setAuditSet] = useState([]);
 
-    let setID = null;
+    async function postAuditSet() {
+        try {
+
+            const payload = {
+                AuditDate: auditSet.date,
+                StartTime: auditSet.startTime,
+                TotalTime: auditSet.totalTime,
+                OrgID: auditSet.org,
+                DeptCode: auditSet.department,
+                AuditedBy: auditSet.auditor,
+                TotalCorrectMoment: auditSet.totalCorrectMoment,
+                TotalMoment: auditSet.totalMoment,
+                SuccessRate: auditSet.successRate
+            }
+
+            console.log('Audit set: ', payload)
+
+            const res = await fetch(`${API}/api/ResultSets`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+            setAuditSet([]);
+            console.log("3) RESPONSE STATUS:", res.status);
+            const insertData = await res.text();
+            console.log("4) RESPONSE BODY:", insertData);
+        } catch (error) {
+            console.error("FETCH ERROR:", err)
+        }
+    }
 
     async function postResult() {
         try {
+            const reqResultSets = await fetch(`${API}/api/ResultSets/lastID`);
+            const setID = await reqResultSets.json();
+            console.log('setID: ', setID);
             console.log("1) postResult CALLED");
-            const reqResultSets = await fetch(`${API}/api/ResultSets`);
-            const count = await reqResultSets.json();
-            setID = Number(count + 1);
-
-            console.log(typeof results.moment)
 
             const payload = results.map(r => ({
                 SetID: setID,
@@ -27,8 +56,6 @@ export function SubmitProvider({ children }) {
                 Glove: r.glove,
                 CorrectMoment: r.correctMoment
             }));
-            console.log(Array.isArray(payload))
-            console.log("2) PAYLOAD:", payload);
 
             const res = await fetch(`${API}/api/Result`, {
                 method: 'POST',
@@ -38,20 +65,22 @@ export function SubmitProvider({ children }) {
                 },
                 body: JSON.stringify({ payload })
             })
-
             setResults([]);
             console.log("3) RESPONSE STATUS:", res.status);
-            const data = await res.text();
-            console.log("4) RESPONSE BODY:", data);
+            const insertData = await res.text();
+            console.log("4) RESPONSE BODY:", insertData);
         } catch (err) {
             console.log("FETCH ERROR:", err);
         }
+
     }
     return (
         <SubmitContext.Provider
             value={{
+                postAuditSet,
                 postResult,
-                results, setResults
+                results, setResults,
+                auditSet, setAuditSet,
             }}>
             {children}
         </SubmitContext.Provider>

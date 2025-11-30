@@ -7,13 +7,13 @@ const ConfirmSubmitContext = createContext();
 export function ConfirmSubmitProvider({ children }) {
     const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
     const [updateAuditSet, setUpdateAuditSet] = useState(false);
-
-    const { postResult } = useSubmit();
+    const { postResult, postAuditSet } = useSubmit();
     const router = useRouter();
 
     useEffect(() => {
         if (updateAuditSet === true) {
             console.log("Submitting Audit...");
+            postAuditSet();
             postResult();
             router.replace('/');
             setUpdateAuditSet(false);
@@ -21,7 +21,6 @@ export function ConfirmSubmitProvider({ children }) {
     }, [updateAuditSet]);
 
     async function SubmitAudit() {
-        console.log("SubmitAudit CALLED - setConfirmSubmitModal(true)");
         setConfirmSubmitModal(true);
 
     }
@@ -30,7 +29,7 @@ export function ConfirmSubmitProvider({ children }) {
             value={{
                 SubmitAudit,
                 confirmSubmitModal, setConfirmSubmitModal, 
-                updateAuditSet, setUpdateAuditSet
+                updateAuditSet, setUpdateAuditSet,
             }}>
             {children}
         </ConfirmSubmitContext.Provider>

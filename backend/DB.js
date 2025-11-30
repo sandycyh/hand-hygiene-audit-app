@@ -20,6 +20,7 @@ const dbConfig = {
 };
 
 export const pool = await sql.connect(dbConfig);
+console.log('connecting to DB: ', dbConfig.database)
 
 export async function getDatas(tableName) {
   try {
@@ -31,12 +32,12 @@ export async function getDatas(tableName) {
   }
 }
 
-export async function getDatawithID(tableName, idName, id) {
+export async function getDatawithID(tableName, column, id) {
   try {
     const result = await pool.request()
-      .input(idName, sql.Int, id)
+      .input(column, sql.Int, id)
       .query(`SELECT * FROM ${tableName}
-              WHERE ${idName} = @${idName}`);
+              WHERE ${column} = @${column}`);
     return result.recordset;
   } catch (error) {
     console.error(error);
@@ -127,14 +128,14 @@ export async function postResults({ SetID, HCW, Moment, Action, Glove,
   }
 }
 
-export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime, 
-  OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate }) {
+export async function postAuditSet({ AuditDate, StartTime, TotalTime, 
+                                    OrgID, DeptCode, AuditedBy, 
+                                    TotalCorrectMoment, TotalMoment, SuccessRate }) {
   try {
     const result = await pool.request()
-      .input("SetID", sql.Int, SetID)
       .input("AuditDate", sql.Date, AuditDate)
-      .input("StartTime", sql.Time(7), StartTime)
-      .input("TotalTime", sql.Time(7), TotalTime)
+      .input("StartTime", sql.VarChar(8), StartTime)
+      .input("TotalTime", sql.VarChar(8), TotalTime)
       .input("OrgID", sql.Int, OrgID)
       .input("DeptCode", sql.VarChar(10), DeptCode)
       .input("AuditedBy", sql.Int, AuditedBy)
@@ -142,9 +143,9 @@ export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime,
       .input("TotalMoment", sql.Int, TotalMoment)
       .input("SuccessRate", sql.Decimal(18, 0), SuccessRate)
       .query(`
-          INSERT INT ResultSets (SetID, AuditDate, StartTime, TotalTime, OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate)
+          INSERT INTO ResultSets (AuditDate, StartTime, TotalTime, OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate)
           OUTPUT INSERTED. *
-          VALUES (@SetID, @AuditDate, @StartTime, @TotalTime, @OrgID, @DeptCode, @AuditedBy, @TotalCorrectMoment, @TotalMoment, @SuccessRate)
+          VALUES (@AuditDate, @StartTime, @TotalTime, @OrgID, @DeptCode, @AuditedBy, @TotalCorrectMoment, @TotalMoment, @SuccessRate)
           `)
           
     console.log("INSERT SUCCESS:", result.recordset);
@@ -154,6 +155,17 @@ export async function postAuditSet({ SetID, AuditDate, StartTime, TotalTime,
   } catch (error) {
     console.error(error.message);
     throw error;
+  }
+}
+export async function getLastSetID(){
+  try{
+    const result = await pool.request()
+    .query(`SELECT TOP 1 SetID 
+      FROM ResultSets
+      ORDER BY SetID DESC;`)
+      return result.recordset[0].SetID;
+  }catch(error){
+    console.error(error.message);
   }
 }
 export async function countRows(tableName) {

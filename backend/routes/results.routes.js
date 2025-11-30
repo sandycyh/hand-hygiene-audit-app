@@ -33,18 +33,12 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Payload must be an array of results" });
     }
 
-    console.log("POST /api/Result BODY:", resultsArray);
-
     const inserted = [];
     for (const r of resultsArray) {
       const row = await postResults(r); // pass object
       inserted.push(row);
     }
 
-    res.status(201).json({
-      message: `${inserted.length} results inserted successfully.`,
-      inserted,
-    });
 
   } catch (err) {
     console.error("POST ROUTE ERROR:", err);

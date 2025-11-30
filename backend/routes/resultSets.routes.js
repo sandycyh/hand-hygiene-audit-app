@@ -1,7 +1,17 @@
 import { Router } from 'express';
-import { getDatas, getDatawithID, postAuditSet } from '../DB.js';
+import { getDatas, getDatawithID, getLastSetID, postAuditSet } from '../DB.js';
 
 const router = Router();
+
+router.get('/lastID', async (req, res) => {
+  try{
+    const lastSetID = await getLastSetID();
+    res.json(lastSetID);
+    console.log(lastSetID)
+  }catch (err) {
+    res.status(500).json({ error: 'Database Error' });
+}
+});
 
 router.get('/', async (req, res) => {
   try {
@@ -12,14 +22,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/count/all', async (req, res) => {
-  try {
-    const resultSetsCount = await countRows('ResultSets');
-    res.json(resultSetsCount);
-  } catch (err) {
-    res.status(500).json({ error: 'Database Error' });
-  }
-})
 
 router.get('/:SetID', async (req, res) => {
   try {
@@ -31,25 +33,26 @@ router.get('/:SetID', async (req, res) => {
   }
 });
 
+router.get('/lastID', async (req, res) => {
+  try{
+    const lastSetID = await getLastSetID();
+    res.json({lastSetID});
+    console.log({lastSetID})
+  }catch (err) {
+    res.status(500).json({ error: 'Database Error' });
+}
+});
 
-router.get('/test', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const resultsArray = req.body.payload || req.body;
+    const results = req.body.payload || req.body;
 
-    if (!Array.isArray(resultsArray) || resultsArray.length === 0) {
-      return res.status(400).json({ error: "Payload must be an array of results" });
-    }
+    console.log("POST /api/Result BODY:", results);
 
-    console.log("POST /api/Result BODY:", resultsArray);
-
-    const inserted = [];
-    for (const r of resultsArray) {
-      const row = await postAuditSet(r); // pass object
-      inserted.push(row);
-    }
+      const inserted = await postAuditSet(results);
 
     res.status(201).json({
-      message: `${inserted.length} results inserted successfully.`,
+      message: 'audit set inserted successfully.',
       inserted,
     });
 
