@@ -14,6 +14,8 @@ export function useDropDown() {
     const [gloveOptions, setGloveOptions] = useState([]);
     const [setID, setSetID] = useState(null);
 
+    const [resultOptions, setResultOptions] = useState([]);
+
     const API = process.env.EXPO_PUBLIC_API_URL;
 
     useEffect(() => {
@@ -103,6 +105,18 @@ export function useDropDown() {
         }
         loadGlove();
     }, []);
+
+    useEffect(() => {
+        async function loadResult(){
+            try{ 
+                const reqResult = await fetch(`${API}/api/ResultSet`); 
+                const result = await reqResult.json();
+                setResultOptions(result.map(r => ({ label: (r.SetID + r.AuditDate + r.SuccessRate), value: r.SetID})))
+            } catch(err) { 
+                console.log("FETCH ERROR:", err);
+            }
+        }
+    })
 
     return {
         orgOptions,

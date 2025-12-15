@@ -1,7 +1,5 @@
-import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { Stack } from 'expo-router';
 import { Button, StyleSheet } from 'react-native';
-import { useSubmit } from '../Context/SubmitResult';
 import { ConfirmSubmitProvider, useConfirmSubmit } from '../Context/ConfirmSubmit';
 import { SubmitProvider } from '../Context/SubmitResult';
 
@@ -12,26 +10,26 @@ export default function Layout() {
             <ConfirmSubmitProvider>
                 <Stack
                     screenOptions={{
-                        headerStyle: {
-                            backgroundColor: '#ffff'
-                        }
-                    }}>;
+                        headerShown: false
+                        }}
+                    >;
                     <Stack.Screen name='index'
                         options={{
                             title: 'Home',
-                            headerShown: false
+                            headerShown: false,
                         }} />
                     <Stack.Screen name='log'
                         options={{
+                            headerShown: false,
                             title: 'Audit Collection',
-                            headerRight: () => {
-                                const { SubmitAudit } = useConfirmSubmit();
-                                return < Button
-                                    title='Complete'
-                                    onPress={() => {
-                                        SubmitAudit();
-                                    }} />
-                            }
+                            // headerRight: () => {
+                            //     const { SubmitAudit } = useConfirmSubmit();
+                            //     return < Button
+                            //         title='Complete'
+                            //         onPress={() => {
+                            //             SubmitAudit();
+                            //         }} />
+                            // }
                         }} />
                 </Stack>
             </ConfirmSubmitProvider>

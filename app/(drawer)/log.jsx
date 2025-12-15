@@ -1,17 +1,17 @@
-import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Modal, FlatList } from 'react-native'
+import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
-import { useDropDown } from '../Context/DropDownOptions';
-import { useSubmit, SubmitProvider } from '../Context/SubmitResult';
-import { useConfirmSubmit } from '../Context/ConfirmSubmit';
+import { useDropDown } from '../../Context/DropDownOptions';
+import { useSubmit, SubmitProvider } from '../../Context/SubmitResult';
+import { useConfirmSubmit } from '../../Context/ConfirmSubmit';
 
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
 import Spacer from '@/components/ui/Spacer';
 import Dropdown from 'react-native-input-select';
 import CollapsableContainer from '@/components/CollapsableContainer';
-import ModalConfirm from '../components/ModalConfirm';
-import ModalAlert from '../components/ModalAlert';
+import ModalConfirm from '../../components/ModalConfirm';
+import ModalAlert from '../../components/ModalAlert';
 
 
 
