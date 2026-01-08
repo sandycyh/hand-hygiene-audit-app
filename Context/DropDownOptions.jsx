@@ -16,6 +16,11 @@ export function useDropDown() {
 
     const [resultOptions, setResultOptions] = useState([]);
 
+    const [editSetID, setEditSetID] = useState(null);
+    const [editResultID, setEditResultID] = useState(null);
+    const [resultSetRequested, setResultSetRequested] = useState([]);
+    const [resultRequested, setResultRequested] = useState({});
+
     const API = process.env.EXPO_PUBLIC_API_URL;
 
     useEffect(() => {
@@ -107,17 +112,57 @@ export function useDropDown() {
     }, []);
 
     useEffect(() => {
-        async function loadResult(){
-            try{ 
-                const reqResult = await fetch(`${API}/api/ResultSet`); 
+        async function loadResult() {
+            try {
+                const reqResult = await fetch(`${API}/api/ResultSets`);
                 const result = await reqResult.json();
-                setResultOptions(result.map(r => ({ label: (r.SetID + r.AuditDate + r.SuccessRate), value: r.SetID})))
-            } catch(err) { 
+                setResultOptions(result.map(r => (
+                    { label: `Set ID: ${r.SetID} - ${r.AuditDate.slice(0, 10)} - Total Moment: ${r.TotalMoment}`, value: r.SetID })))
+            } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
         }
-    })
+        loadResult();
+    }, []);
 
+    useEffect(() => {
+        if (!editSetID) return;
+
+        (async () => {
+            try {
+                const reqSet = await fetch(`${API}/api/Result/${editSetID}`)
+                const result = await reqSet.json();
+                setResultSetRequested(result);
+            } catch (err) {
+                console.log("FETCH ERROR:", err);
+            }
+        })();
+    }, [editSetID])
+
+    useEffect(() => {
+        if (!editSetID || !editResultID) return;
+
+        (async () => {
+            try {
+                console.log(`Set ID: ${editSetID}`)
+                console.log(`Result ID: ${editResultID}`)
+
+                const reqSet = await fetch(`${API}/api/Result/${editSetID}/${editResultID}`)
+                const result = await reqSet.json();
+                setResultRequested(result);
+
+                console.log('API result:', result)
+                console.log('Is array:', Array.isArray(result))
+
+            } catch (err) {
+                console.log("FETCH ERROR: ", err);
+            }
+        })();
+    }, [editSetID, editResultID])
+
+    useEffect(() => {
+        console.log(resultRequested.ResultID)
+    }, [resultRequested])
     return {
         orgOptions,
         deptOptions,
@@ -126,10 +171,15 @@ export function useDropDown() {
         momentOptions,
         actionOptions,
         gloveOptions,
+        resultOptions,
+        resultSetRequested,
         org, setOrg,
         department, setDepartment,
         auditor, setAuditor,
-        setID, setSetID
+        setID, setSetID,
+        editSetID, setEditSetID,
+        editResultID, setEditResultID,
+        resultRequested, setResultRequested
     }
 }
 

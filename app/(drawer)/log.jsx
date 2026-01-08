@@ -191,10 +191,6 @@ export default function log() {
   }
 
   useEffect(() => {
-    console.log(`start time: [${startTime}]`)
-  }, [startTime])
-  useEffect(() => {
-
     let interval;
     if (isActive) {
       interval = setInterval(() => {

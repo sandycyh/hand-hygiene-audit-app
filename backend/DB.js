@@ -34,6 +34,7 @@ export async function getDatas(tableName) {
 
 export async function getDatawithID(tableName, column, id) {
   try {
+    // const request = await pool request()
     const result = await pool.request()
       .input(column, sql.Int, id)
       .query(`SELECT * FROM ${tableName}
@@ -98,11 +99,13 @@ export async function getGlove() {
   }
 }
 
-export async function postResults({ SetID, HCW, Moment, Action, Glove, 
-                                    CorrectMoment }) {
+export async function postResults({ SetID, HCW, Moment, Action, Glove,
+  CorrectMoment }) {
   try {
-    console.log("POSTING TO DB:", { SetID, HCW, Moment, Action, Glove, 
-                                    CorrectMoment });
+    console.log("POSTING TO DB:", {
+      SetID, HCW, Moment, Action, Glove,
+      CorrectMoment
+    });
 
     const result = await pool.request()
       .input("SetID", sql.Int, SetID)
@@ -128,9 +131,9 @@ export async function postResults({ SetID, HCW, Moment, Action, Glove,
   }
 }
 
-export async function postAuditSet({ AuditDate, StartTime, TotalTime, 
-                                    OrgID, DeptCode, AuditedBy, 
-                                    TotalCorrectMoment, TotalMoment, SuccessRate }) {
+export async function postAuditSet({ AuditDate, StartTime, TotalTime,
+  OrgID, DeptCode, AuditedBy,
+  TotalCorrectMoment, TotalMoment, SuccessRate }) {
   try {
     const result = await pool.request()
       .input("AuditDate", sql.Date, AuditDate)
@@ -147,7 +150,7 @@ export async function postAuditSet({ AuditDate, StartTime, TotalTime,
           OUTPUT INSERTED. *
           VALUES (@AuditDate, @StartTime, @TotalTime, @OrgID, @DeptCode, @AuditedBy, @TotalCorrectMoment, @TotalMoment, @SuccessRate)
           `)
-          
+
     console.log("INSERT SUCCESS:", result.recordset);
     // return the inserted row to the caller (if needed)
     return result.recordset && result.recordset[0];
@@ -157,17 +160,18 @@ export async function postAuditSet({ AuditDate, StartTime, TotalTime,
     throw error;
   }
 }
-export async function getLastSetID(){
-  try{
+export async function getLastSetID() {
+  try {
     const result = await pool.request()
-    .query(`SELECT TOP 1 SetID 
+      .query(`SELECT TOP 1 SetID 
       FROM ResultSets
       ORDER BY SetID DESC;`)
-      return result.recordset[0].SetID;
-  }catch(error){
+    return result.recordset[0].SetID;
+  } catch (error) {
     console.error(error.message);
   }
 }
+
 export async function countRows(tableName) {
   try {
     const result = await pool.request()
@@ -178,3 +182,19 @@ export async function countRows(tableName) {
   }
 }
 
+export async function getResult(setID, resultID) {
+  try {
+    const request  = pool.request()
+      .input('resultID', sql.Int, resultID)
+      .input('setID', sql.Int, setID)
+
+    const result = await request
+      .query(`SELECT * FROM Result
+            WHERE ResultID = @resultID
+              AND SetID = @setID`)
+    return result.recordset[0] ?? null;
+
+  } catch (error) {
+    console.error(error.message)
+  }
+}
