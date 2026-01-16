@@ -144,15 +144,9 @@ export function useDropDown() {
 
         (async () => {
             try {
-                console.log(`Set ID: ${editSetID}`)
-                console.log(`Result ID: ${editResultID}`)
-
                 const reqSet = await fetch(`${API}/api/Result/${editSetID}/${editResultID}`)
                 const result = await reqSet.json();
                 setResultRequested(result);
-
-                console.log('API result:', result)
-                console.log('Is array:', Array.isArray(result))
 
             } catch (err) {
                 console.log("FETCH ERROR: ", err);

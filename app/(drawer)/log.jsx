@@ -1,9 +1,9 @@
-import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Button } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { useNavigation, useRouter } from 'expo-router';
 
 import { useDropDown } from '../../Context/DropDownOptions';
 import { useSubmit, SubmitProvider } from '../../Context/SubmitResult';
-import { useConfirmSubmit } from '../../Context/ConfirmSubmit';
 
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
@@ -17,16 +17,7 @@ import ModalAlert from '../../components/ModalAlert';
 
 export default function log() {
 
-  const getFormattedDate = () => {
-    const curDate = new Date();
-    const day = String(curDate.getDate()).padStart(2, '0');
-    const month = String(curDate.getMonth() + 1).padStart(2, '0');
-    const year = curDate.getFullYear();
-    if (!date) {
-      setDate(`${year}-${month}-${day}`);
-    }
-    return (`${day}-${month}-${year}`);
-  };
+  //  ********************** time / date / timer section ********************** 
 
   const timerCount = (time) => {
     const hours = Math.floor(time / 3600);
@@ -44,10 +35,59 @@ export default function log() {
   const [expanded, setExpanded] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const { confirmSubmitModal, setConfirmSubmitModal,
-    updateAuditSet, setUpdateAuditSet,
-  } = useConfirmSubmit();
 
+  const getFormattedDate = () => {
+    const curDate = new Date();
+    const day = String(curDate.getDate()).padStart(2, '0');
+    const month = String(curDate.getMonth() + 1).padStart(2, '0');
+    const year = curDate.getFullYear();
+    if (!date) {
+      setDate(`${year}-${month}-${day}`);
+    }
+    return (`${day}-${month}-${year}`);
+  };
+
+
+  useEffect(() => {
+    const timeNow = new Date();
+    const hours = String(timeNow.getHours()).padStart(2, '0');
+    const minutes = String(timeNow.getMinutes()).padStart(2, '0');
+    const seconds = String(timeNow.getSeconds()).padStart(2, '0');
+
+    setStartTime(`${hours}:${minutes}:${seconds}`)
+  }, []);
+
+  //toggle timer start / stop 
+  const toggle = () => {
+    setIsActive(!isActive);
+  }
+
+  useEffect(() => {
+    let interval;
+    if (isActive) {
+      interval = setInterval(() => {
+        setTimer(timer => timer + 1)
+      }, 1000);
+    } else if (!isActive && timer !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive]);
+  const onItemPress = () => {
+    setExpanded(!expanded);
+  };
+
+  async function getTotalTime() {
+    setTotalTime(
+      String(hours).padStart(2, '0') + ':' +
+      String(mins).padStart(2, '0') + ':' +
+      String(seconds).padStart(2, '0')
+    )
+  }
+
+
+
+  // setup & import states for audit form 
   const { orgOptions,
     deptOptions,
     auditorOptions,
@@ -60,22 +100,22 @@ export default function log() {
     auditor, setAuditor,
   } = useDropDown();
 
-  const {
-    results, setResults,
-    auditSet, setAuditSet,
-  } = useSubmit();
-
   const [HCW, setHCW] = useState(null);
   const [moment, setMoment] = useState(null);
   const [action, setAction] = useState(null);
   const [glove, setGlove] = useState(null);
   const [correctMoment, setCorrectMoment] = useState(null);
-
-
-  const [warningEmptyAuditVisible, setWarningEmptyAuditVisible] = useState(false);
-  const [warningModalVisible, setWarningModalVisible] = useState(false)
   const [momentNo, setMomentNo] = useState(0);
 
+
+  // warning modal states 
+  const [warningEmptyAuditVisible, setWarningEmptyAuditVisible] = useState(false);
+  const [warningModalVisible, setWarningModalVisible] = useState(false)
+
+
+  // storing results
+  const [results, setResults] = useState([]);
+  const [auditSet, setAuditSet] = useState([]);
 
   var totalMoment = results.length;
   var totalCorrectMoment = results.filter(r => r.correctMoment === 'Yes').length;
@@ -87,25 +127,13 @@ export default function log() {
     return successRate;
   };
 
-  async function getTotalTime() {
-    console.log(`${hours}:${mins}:${seconds}`)
-    setTotalTime(
-      String(hours).padStart(2, '0') + ':' +
-      String(mins).padStart(2, '0') + ':' +
-      String(seconds).padStart(2, '0')
-    )
-  }
-
-  const onItemPress = () => {
-    setExpanded(!expanded);
-  };
-
   const addMoments = () => {
     setShowForm(!showForm);
     setMomentNo(momentNo => results.length + 1);
   };
 
   function saveAndExit() {
+    nextMoment();
     setShowForm(false);
     getTotalTime();
   }
@@ -140,25 +168,81 @@ export default function log() {
         setWarningModalVisible(true);
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   };
 
-  const onConfirm = () => {
+  //confirm submit section
+  const { postResult,
+    postAuditSet,
+  } = useSubmit();
+
+
+  const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
+  const router = useRouter();
+
+  function MapAuditSet(auditSet) {
+    if (!auditSet) throw new Error('auditSet is undefined')
+
+    return {
+      AuditDate: auditSet.date,
+      StartTime: auditSet.startTime,
+      TotalTime: auditSet.totalTime,
+      OrgID: auditSet.org,
+      DeptCode: auditSet.department,
+      AuditedBy: auditSet.auditor,
+      TotalCorrectMoment: auditSet.totalCorrectMoment,
+      TotalMoment: auditSet.totalMoment,
+      SuccessRate: auditSet.successRate
+    }
+  }
+
+  function MapResult(setID, results) {
+
+    return results.map(r => ({
+      SetID: setID,
+      HCW: r.HCW,
+      Moment: r.moment,
+      Action: r.action,
+      Glove: r.glove,
+      CorrectMoment: r.correctMoment
+    }));
+  }
+
+
+  async function confirmSubmit(auditSet) {
+    const auditSetData = MapAuditSet(auditSet)
+    const setID = await postAuditSet(auditSetData);
+
+    console.log('result' + results)
+
+    const resultPayload = MapResult(setID, results)
+
+    console.log('resultPayload: ' + resultPayload[0].SetID)
+
+    await postResult(resultPayload)
+
+    //empty the list for next time 
+
+    setAuditSet([]);
+    setResults([]);
+  }
+
+  // for confirm button  
+  const onConfirm = async () => {
     if (!org || !department || !auditor) {
       setWarningModalVisible(true);
       setConfirmSubmitModal(false);
       return;
     } else if (results.length === 0) {
-      console.log('Empty Audit set!')
       setWarningEmptyAuditVisible(true);
       setConfirmSubmitModal(false);
       return;
     }
     else {
+      console.log('totalTime: ' + totalTime)
       getSuccessRate();
-      console.log('total Time: ', totalTime)
-      setAuditSet({
+      const newAuditSet = ({
         date,
         startTime,
         totalTime,
@@ -169,38 +253,28 @@ export default function log() {
         totalMoment,
         successRate
       })
+      setAuditSet(newAuditSet)
 
-      setUpdateAuditSet(true);
+      await confirmSubmit(newAuditSet)
       setConfirmSubmitModal(false);
-    }
+      router.replace('/');
 
+    }
   }
 
-  useEffect(() => {
-    const timeNow = new Date();
-    const hours = String(timeNow.getHours()).padStart(2, '0');
-    const minutes = String(timeNow.getMinutes()).padStart(2, '0');
-    const seconds = String(timeNow.getSeconds()).padStart(2, '0');
 
-
-    setStartTime(`${hours}:${minutes}:${seconds}`)
-  }, []);
-
-  const toggle = () => {
-    setIsActive(!isActive);
+  const onComplete = () => {
+    setConfirmSubmitModal(true)
   }
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    let interval;
-    if (isActive) {
-      interval = setInterval(() => {
-        setTimer(timer => timer + 1)
-      }, 1000);
-    } else if (!isActive && timer !== 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isActive]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button title='Complete' onPress={onComplete} />
+      )
+    })
+  }, [navigation])
 
 
   return (
@@ -387,6 +461,7 @@ export default function log() {
 
           </ThemedView>
         </Modal>
+
       </ThemedView >
     </SubmitProvider>
   )

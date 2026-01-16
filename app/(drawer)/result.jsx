@@ -31,21 +31,6 @@ export default function Result() {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-
-  const editResultList = ({ ID, correctMoment }) => (
-    <View style={styles.item}>
-      <Text style={styles.title} > Result ID: {ID} - Correct Moment: ${correctMoment} </Text>
-    </View>
-  )
-
-  // useEffect(() => {
-  //   console.log(`edit: ${editResult}`)
-  //   console.log(`editID: ${editResultID}`)
-  //   console.log(`edit: ${editResult}`)
-
-  // }, [editResult])
-
-
   // consider not using dropdown, use flatlist with selection instead 
   return (
     <SafeAreaProvider >

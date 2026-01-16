@@ -1,29 +1,12 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 const SubmitContext = createContext();
 
 export function SubmitProvider({ children }) {
     const API = process.env.EXPO_PUBLIC_API_URL;
-    const [results, setResults] = useState([]);
-    const [auditSet, setAuditSet] = useState([]);
 
-    async function postAuditSet() {
+    async function postAuditSet(payload) {
         try {
-
-            const payload = {
-                AuditDate: auditSet.date,
-                StartTime: auditSet.startTime,
-                TotalTime: auditSet.totalTime,
-                OrgID: auditSet.org,
-                DeptCode: auditSet.department,
-                AuditedBy: auditSet.auditor,
-                TotalCorrectMoment: auditSet.totalCorrectMoment,
-                TotalMoment: auditSet.totalMoment,
-                SuccessRate: auditSet.successRate
-            }
-
-            console.log('Audit set: ', payload)
-
             const res = await fetch(`${API}/api/ResultSets`, {
                 method: 'POST',
                 headers: {
@@ -32,30 +15,20 @@ export function SubmitProvider({ children }) {
                 },
                 body: JSON.stringify(payload)
             });
-            setAuditSet([]);
-            console.log("3) RESPONSE STATUS:", res.status);
-            const insertData = await res.text();
-            console.log("4) RESPONSE BODY:", insertData);
+            console.log('AuditSet logged')
+            const json = await res.json();
+            console.log('setID: ' + json.setID)
+            return json.setID
         } catch (error) {
             console.error("FETCH ERROR:", err)
         }
     }
 
-    async function postResult() {
+    async function postResult(payload) {
         try {
-            const reqResultSets = await fetch(`${API}/api/ResultSets/lastID`);
-            const setID = await reqResultSets.json();
-            console.log('setID: ', setID);
-            console.log("1) postResult CALLED");
+            // const reqResultSets = await fetch(`${API}/api/ResultSets/lastID`);
+            // const setID = await reqResultSets.json()
 
-            const payload = results.map(r => ({
-                SetID: setID,
-                HCW: r.HCW,
-                Moment: r.moment,
-                Action: r.action,
-                Glove: r.glove,
-                CorrectMoment: r.correctMoment
-            }));
 
             const res = await fetch(`${API}/api/Result`, {
                 method: 'POST',
@@ -63,9 +36,8 @@ export function SubmitProvider({ children }) {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ payload })
+                body: JSON.stringify( payload )
             })
-            setResults([]);
             console.log("3) RESPONSE STATUS:", res.status);
             const insertData = await res.text();
             console.log("4) RESPONSE BODY:", insertData);
@@ -78,9 +50,7 @@ export function SubmitProvider({ children }) {
         <SubmitContext.Provider
             value={{
                 postAuditSet,
-                postResult,
-                results, setResults,
-                auditSet, setAuditSet,
+                postResult
             }}>
             {children}
         </SubmitContext.Provider>

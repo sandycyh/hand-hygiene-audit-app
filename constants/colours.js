@@ -2,7 +2,7 @@ export const Colours = {
     primary: '#fafafa',
 
     dark: {
-        text: '#d4d4d4',
+        text: '#dbd8e7ff',
         title: '#fff', 
         background: '#133981', 
         navBackground: '#201e2b',
@@ -12,7 +12,7 @@ export const Colours = {
     },
 
     light: {
-        text: '#625f72',
+        text: '#47406bff',
         title: '#201e2b', 
         background: '#e0dfe8', 
         navBackground: '#e8e7ef',

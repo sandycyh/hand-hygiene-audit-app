@@ -12,7 +12,8 @@ router.get('/:setID', async (req, res) => {
     res.json(results);
   } catch (err) {
     res.status(500).json({ error: 'Database Error' });
-}})
+  }
+})
 
 //get one specify result from result with resultID
 router.get('/:setID/:resultID', async (req, res) => {
@@ -47,11 +48,23 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Payload must be an array of results" });
     }
 
-    const inserted = [];
     for (const r of resultsArray) {
-      const row = await postResults(r); // pass object
-      inserted.push(row);
+      if (!r.SetID) {
+        return res.status(400).json({ error: 'SetID missing in payload' })
+      }
+
+      await postResults(
+        r.SetID,
+        r.HCW,
+        r.Moment,
+        r.Action,
+        r.Glove,
+        r.CorrectMoment
+      ); // pass object
+      // inserted.push(row);
+
     }
+    return res.status(201).json({ message: 'Results saved' })
 
 
   } catch (err) {
