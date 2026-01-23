@@ -1,5 +1,4 @@
-console.log("ENTRY FILE RUNNING");
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { useRouter } from 'expo-router';
 import { Link } from "expo-router";
 
@@ -20,7 +19,7 @@ const HomeScreen = () => {
         Hand Hygiene Audit App
       </ThemedText>
       <Spacer size={60} />
-
+ 
       <Image source={Logo} style={styles.image}></Image>
       <Spacer size={50} />
       

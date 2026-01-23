@@ -22,27 +22,114 @@ const dbConfig = {
 export const pool = await sql.connect(dbConfig);
 console.log('connecting to DB: ', dbConfig.database)
 
-export async function getDatas(tableName) {
+export async function getOrg() {
   try {
     const result = await pool.request()
-      .query(`SELECT * FROM ${tableName}`);
+      .query(`SELECT * FROM Organisation`);
     return result.recordset;
   } catch (error) {
     console.error(error.message);
   }
 }
 
-export async function getDatawithID(tableName, column, id) {
+export async function getMoment() {
   try {
-    // const request = await pool request()
     const result = await pool.request()
-      .input(column, sql.Int, id)
-      .query(`SELECT * FROM ${tableName}
-              WHERE ${column} = @${column}`);
+      .query(`SELECT * FROM Moment_Descriptions`);
     return result.recordset;
   } catch (error) {
-    console.error(error);
-    throw error;
+    console.error(error.message);
+  }
+}
+
+export async function getResult() {
+  try {
+    const result = await pool.request()
+      .query(`SELECT * FROM Result`);
+    return result.recordset;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+export async function getResultSets() {
+  try {
+    const result = await pool.request()
+      .query(`SELECT * FROM ResultSets`);
+    return result.recordset;
+
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+export async function getDeptWithOrgID(OrgID){ 
+  try{  
+    const result = await pool.request()
+    .input('OrgID', sql.Int, OrgID)
+    .query(`SELECT * FROM Department
+            WHERE OrgID = @OrgID`);
+    return result.recordset;
+    
+  }catch(error){
+    console.error(error.message);
+  }
+}
+
+export async function getAuditorWithDeptCode(DeptCode) {
+  try {
+    const result = await pool.request()
+      .input('DeptCode', sql.Int, DeptCode)
+      .query(`SELECT * FROM Auditor 
+              WHERE DeptCode = @DeptCode`)
+
+    return result.recordset;
+
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+export async function getResultWithSetID(setID){
+  try{
+    const result = await pool.request()
+    .input('SetID', sql.Int, setID)
+    .query(`SELECT * FROM Result
+            WHERE SetID = @SetID`);
+    return result.recordset;
+    
+  }catch(error){ 
+    console.error(error.message);
+  }
+}
+
+export async function getOneResult(setID, resultID) {
+  try {
+    const request = pool.request()
+      .input('resultID', sql.Int, resultID)
+      .input('setID', sql.Int, setID)
+
+    const result = await request
+      .query(`SELECT * FROM Result
+            WHERE ResultID = @resultID
+              AND SetID = @setID`)
+    return result.recordset[0] ?? null;
+
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function getResultSetwithSetID(setID){
+  try {
+      const result = await pool.request()
+      .input('SetID', sql.Int, setID)
+      .query(`SELECT * FROM ResultSet
+              WHERE SetID = @SetID`);
+    return result.recordset;
+
+  } catch (error) {
+    console.error(error.message);
   }
 }
 
@@ -99,6 +186,8 @@ export async function getGlove() {
   }
 }
 
+
+
 export async function postAuditSet({ AuditDate, StartTime, TotalTime,
   OrgID, DeptCode, AuditedBy, TotalCorrectMoment, TotalMoment, SuccessRate }) {
   try {
@@ -121,7 +210,6 @@ export async function postAuditSet({ AuditDate, StartTime, TotalTime,
       throw new Error("Failed to get SetID from insert")
     }
 
-    //console.log('DB recordset:', result.recordset)
 
     // return the inserted row to the caller (if needed)
     return result.recordset[0].SetID;
@@ -135,16 +223,6 @@ export async function postAuditSet({ AuditDate, StartTime, TotalTime,
 export async function postResults(setID, HCW, Moment, Action, Glove,
   CorrectMoment) {
   try {
-    // console.log("POSTING TO DB:", {
-    //   SetID, HCW, Moment, Action, Glove,
-    //   CorrectMoment
-    // });
-
-    console.log('postResults args:', {
-      setID,
-      type: typeof setID,
-      isNaN: Number.isNaN(setID)
-    })
 
     const result = await pool.request()
       .input("SetID", sql.Int, setID)
@@ -170,41 +248,3 @@ export async function postResults(setID, HCW, Moment, Action, Glove,
 }
 
 
-export async function getLastSetID() {
-  try {
-    const result = await pool.request()
-      .query(`SELECT TOP 1 SetID 
-      FROM ResultSets
-      ORDER BY SetID DESC;`)
-    return result.recordset[0].SetID;
-  } catch (error) {
-    console.error(error.message);
-  }
-}
-
-export async function countRows(tableName) {
-  try {
-    const result = await pool.request()
-      .query(`SELECT COUNT(*) AS total FROM ${tableName}`)
-    return result.recordset[0].Total;
-  } catch (error) {
-    console.error(error.message)
-  }
-}
-
-export async function getResult(setID, resultID) {
-  try {
-    const request = pool.request()
-      .input('resultID', sql.Int, resultID)
-      .input('setID', sql.Int, setID)
-
-    const result = await request
-      .query(`SELECT * FROM Result
-            WHERE ResultID = @resultID
-              AND SetID = @setID`)
-    return result.recordset[0] ?? null;
-
-  } catch (error) {
-    console.error(error.message)
-  }
-}

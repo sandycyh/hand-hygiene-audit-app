@@ -17,7 +17,6 @@ export function SubmitProvider({ children }) {
             });
             console.log('AuditSet logged')
             const json = await res.json();
-            console.log('setID: ' + json.setID)
             return json.setID
         } catch (error) {
             console.error("FETCH ERROR:", err)
@@ -38,9 +37,8 @@ export function SubmitProvider({ children }) {
                 },
                 body: JSON.stringify( payload )
             })
-            console.log("3) RESPONSE STATUS:", res.status);
-            const insertData = await res.text();
-            console.log("4) RESPONSE BODY:", insertData);
+            
+            console.log('Results logged')
         } catch (err) {
             console.log("FETCH ERROR:", err);
         }

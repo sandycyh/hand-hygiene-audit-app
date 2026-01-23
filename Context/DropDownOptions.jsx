@@ -152,11 +152,8 @@ export function useDropDown() {
                 console.log("FETCH ERROR: ", err);
             }
         })();
-    }, [editSetID, editResultID])
+    }, [editSetID && editResultID])
 
-    useEffect(() => {
-        console.log(resultRequested.ResultID)
-    }, [resultRequested])
     return {
         orgOptions,
         deptOptions,

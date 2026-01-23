@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { getDatawithID } from '../DB.js';
+import { getDeptWithOrgID } from '../DB.js';
 
 const router = Router();
 
@@ -7,7 +7,7 @@ const router = Router();
 router.get('/:orgID', async (req, res) => {
   try {
     const OrgID = Number(req.params.orgID);
-    const depts = await getDatawithID('Department', 'OrgID', OrgID);
+    const depts = await getDeptWithOrgID(OrgID);
 
     res.json(depts);
   } catch (err) {

@@ -133,9 +133,22 @@ export default function log() {
   };
 
   function saveAndExit() {
-    nextMoment();
+    try {
+      if (HCW !== null && moment !== null && action !== null &&
+        glove !== null && correctMoment !== null) {
+        nextMoment();
+        setShowForm(false);
+        getTotalTime();
+      } else {
+        setWarningModalVisible(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  function cancel() {
     setShowForm(false);
-    getTotalTime();
   }
 
   const resetDropDown = () => {
@@ -172,7 +185,7 @@ export default function log() {
     }
   };
 
-  //confirm submit section
+  //confirm submit section (including mappinng data)
   const { postResult,
     postAuditSet,
   } = useSubmit();
@@ -211,15 +224,12 @@ export default function log() {
 
 
   async function confirmSubmit(auditSet) {
+    //mapping auditSet details 
     const auditSetData = MapAuditSet(auditSet)
     const setID = await postAuditSet(auditSetData);
 
-    console.log('result' + results)
-
+    //mapping individual audit moments 
     const resultPayload = MapResult(setID, results)
-
-    console.log('resultPayload: ' + resultPayload[0].SetID)
-
     await postResult(resultPayload)
 
     //empty the list for next time 
@@ -240,7 +250,6 @@ export default function log() {
       return;
     }
     else {
-      console.log('totalTime: ' + totalTime)
       getSuccessRate();
       const newAuditSet = ({
         date,
@@ -258,10 +267,8 @@ export default function log() {
       await confirmSubmit(newAuditSet)
       setConfirmSubmitModal(false);
       router.replace('/');
-
     }
   }
-
 
   const onComplete = () => {
     setConfirmSubmitModal(true)
@@ -457,6 +464,12 @@ export default function log() {
 
             <TouchableOpacity onPress={() => { saveAndExit() }} style={styles.mommentBtn}>
               <ThemedText>Save & Exit</ThemedText>
+            </TouchableOpacity>
+
+            <Spacer size={10} />
+
+            <TouchableOpacity onPress={() => { cancel() }} style={styles.mommentBtn}>
+              <ThemedText>Cancel</ThemedText>
             </TouchableOpacity>
 
           </ThemedView>

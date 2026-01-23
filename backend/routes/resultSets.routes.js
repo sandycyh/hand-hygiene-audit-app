@@ -1,20 +1,11 @@
 import { Router } from 'express';
-import { getDatas, getDatawithID, getLastSetID, postAuditSet } from '../DB.js';
+import { getResultSets, getResultSetwithSetID, postAuditSet } from '../DB.js';
 
 const router = Router();
 
-router.get('/lastID', async (req, res) => {
-  try {
-    const lastSetID = await getLastSetID();
-    res.json(lastSetID);
-  } catch (err) {
-    res.status(500).json({ error: 'Database Error' });
-  }
-});
-
 router.get('/', async (req, res) => {
   try {
-    const resultSets = await getDatas('ResultSets');
+    const resultSets = await getResultSets();
     res.json(resultSets);
   } catch (err) {
     res.status(500).json({ error: 'Database Error' });
@@ -25,7 +16,7 @@ router.get('/', async (req, res) => {
 router.get('/:SetID', async (req, res) => {
   try {
     const resultSet = Number(req.params.SetID);
-    const set = await getDatawithID('ResultSets', 'SetID', resultSet)
+    const set = await getResultSetwithSetID(resultSet)
     res.json(set);
   } catch (err) {
     res.status(500).json({ error: 'Database Error' });
@@ -42,11 +33,6 @@ router.post('/', async (req, res) => {
     }
 
     res.json({ setID })
-
-    // res.status(201).json({
-    //   message: 'audit set inserted successfully.',
-    //   inserted,
-    // });
 
   } catch (err) {
     console.error("POST ROUTE ERROR:", err);

@@ -1,11 +1,11 @@
 import { Router} from 'express';
-import { getDatas } from '../DB.js';
+import { getOrg } from '../DB.js';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    const Orgs = await getDatas('Organisation');
+    const Orgs = await getOrg();
 
     res.json(Orgs);
   } catch (err) {

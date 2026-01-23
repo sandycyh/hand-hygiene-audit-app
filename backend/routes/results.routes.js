@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDatawithID, getDatas, postResults, getResult } from '../DB.js';
+import { getResultWithSetID, getOneResult, getResult, postResults } from '../DB.js';
 
 const router = Router();
 
@@ -7,7 +7,7 @@ const router = Router();
 router.get('/:setID', async (req, res) => {
   try {
     const setID = Number(req.params.setID);
-    const results = await getDatawithID('Result', 'SetID', setID);
+    const results = await getResultWithSetID(setID);
 
     res.json(results);
   } catch (err) {
@@ -21,7 +21,7 @@ router.get('/:setID/:resultID', async (req, res) => {
     const resultID = Number(req.params.resultID);
     const setID = Number(req.params.setID);
 
-    const results = await getResult(setID, resultID);
+    const results = await getOneResult(setID, resultID);
 
     res.json(results);
   } catch (err) {
@@ -29,9 +29,10 @@ router.get('/:setID/:resultID', async (req, res) => {
   }
 });
 
+//get all results
 router.get('/', async (req, res) => {
   try {
-    const results = await getDatas('Result');
+    const results = await getResult();
 
     res.json(results);
   } catch (err) {
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-
+//post data to Result
 router.post('/', async (req, res) => {
   try {
     const resultsArray = req.body.payload || req.body;
