@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+### Hand Hygiene Audit Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### Overview
 
-## Get started
+The Hand Hygiene Audit App is designed to digitise and streamline hand hygiene auditing in clinical environments.
+It replaces paper-based audits with a structured, offline-friendly workflow and a centralised backend for secure data storage and reporting.
+The app was built as a real-world digital health project, reflecting practical clinical workflows and data accuracy requirements commonly found in hospital settings.
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+### Current Features(v1)
 
-2. Start the app
+- Create a hand hygiene audit set
+- Log individual hand hygiene moments within a set
+- Automatically calculate compliance metrics
+- View completed audit details
+- Secure backend persistence with relational integrity
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+### Architecture Overview
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- One audit session is created first and stored in the database.
+- The database generates a unique SetID (identity column).
+- Individual audit results are mapped to the generated SetID.
+- Results are posted only after the audit set is successfully created, ensuring relational integrity.
+- This design mirrors real-world healthcare data models where parent-child relationships must be accurate and auditable.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+### Planned Enhancements
 
-When you're ready, run:
+- Edit and delete audit sets
+- Audit history and filtering
+- Role-based access (auditor / admin)
+- Basic reporting and export
+- Offline-first support with sync
 
-```bash
-npm run reset-project
-```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### API documentation
+Each endpoint performs a single responsibility and uses parameterised queries to ensure data integrity and security.
 
-## Learn more
+### Audit Sets
+- `POST /api/auditset`  
+  Creates a new audit session and returns the generated `SetID`.
 
-To learn more about developing your project with Expo, look at the following resources:
+- `GET /api/auditset/:setID`  
+  Retrieves a completed audit session by ID.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Audit Results
+- `POST /api/results`  
+  Inserts multiple audit results linked to a single `SetID`.
 
-## Join the community
+- `GET /api/results/:setID`  
+  Retrieves all results for a specific audit session.
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `GET /api/results/:setID/:resultID`
+   Retrieves a specific result for a specific audit session. 
