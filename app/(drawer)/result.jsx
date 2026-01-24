@@ -69,7 +69,6 @@ export default function Result() {
               visible={modalVisible}
               result={resultRequested}
               onClose={() => setModalVisible(false)}>
-
             </ModalView>
 
           </ThemedView>

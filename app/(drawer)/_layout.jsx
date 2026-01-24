@@ -6,33 +6,39 @@ import { SubmitProvider } from '../../Context/SubmitResult';
 export default function Layout() {
     return (
         <SubmitProvider>
-                <Drawer
+            <Drawer
+                options={{
+                    headerShown: true,
+                }}>
+                <Drawer.Screen
+                    name='login'
                     options={{
-                        headerShown: true,
-                    }}>
-                    <Drawer.Screen
-                        name='log'
-                        options={{
-                            drawerLabel: 'Log Audit',
-                            title: 'Log Audit'
-                            // headerRight: () => {
-                            //     const { SubmitAudit } = useConfirmSubmit();
-                            //     return < Button
-                            //         title='Complete'
-                            //         onPress={() => {
-                            //             SubmitAudit();
-                            //         }} />
-                            // }
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='result'
-                        options={{
-                            drawerLabel: 'View Result',
-                            title: 'View Result',
-                        }}
-                    />
-                </Drawer>
+                        drawerLabel: 'Auditor Login', 
+                        title: 'Auditor Login'
+                    }}    
+                />
+                <Drawer.Screen
+                    name='log'
+                    options={{
+                        drawerLabel: 'Log Audit',
+                        title: 'Log Audit'
+                    }}
+                />
+                <Drawer.Screen
+                    name='result'
+                    options={{
+                        drawerLabel: 'View Result',
+                        title: 'View Result',
+                    }}
+                />
+                <Drawer.Screen
+                    name='codingClassificationSheet'
+                    options={{
+                        drawerLabel: 'Coding Classification Sheet',
+                        title: 'Coding Classification Sheet',
+                    }}
+                />
+            </Drawer>
         </SubmitProvider>
     )
 } 

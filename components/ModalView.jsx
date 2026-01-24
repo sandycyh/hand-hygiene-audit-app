@@ -3,9 +3,6 @@ import { Modal, View, Pressable, StyleSheet } from 'react-native'
 import ThemedView from '@/components/ui/ThemedView';
 import ThemedText from '@/components/ui/ThemedText';
 
-import { useDropDown } from '../Context/DropDownOptions';
-import { useEffect } from 'react';
-
 export default function ModalView({ visible, result, onClose }) {
 
   return (
