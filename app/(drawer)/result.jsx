@@ -4,11 +4,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useDropDown } from '../../Context/DropDownOptions';
 import { SubmitProvider } from '../../Context/SubmitResult';
-import ModalView from '@/components/ModalView';
+import ModalView from '../../components/ModalView';
 
-import ThemedText from '@/components/ui/ThemedText';
-import ThemedView from '@/components/ui/ThemedView';
-import Spacer from '@/components/ui/Spacer';
+import ThemedText from '../../components/ui/ThemedText';
+import ThemedView from '../../components/ui/ThemedView';
+import Spacer from '../../components/ui/Spacer';
 import Dropdown from 'react-native-input-select';
 
 export default function Result() {

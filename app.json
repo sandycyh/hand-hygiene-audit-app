@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.sandycl.hand-hygiene-audit-app"
+      "package": "com.sandycl.handhygieneauditapp"
     },
     "web": {
       "output": "static",
@@ -39,11 +39,25 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d3cffcac-e9d4-4a74-8c48-b25c2ea5a068"
+      }
+    },
+    "owner": "sandycl",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d3cffcac-e9d4-4a74-8c48-b25c2ea5a068"
     }
   }
 }

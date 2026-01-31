@@ -5,11 +5,11 @@ import { useNavigation, useRouter } from 'expo-router';
 import { useDropDown } from '../../Context/DropDownOptions';
 import { useSubmit, SubmitProvider } from '../../Context/SubmitResult';
 
-import ThemedView from '@/components/ui/ThemedView';
-import ThemedText from '@/components/ui/ThemedText';
-import Spacer from '@/components/ui/Spacer';
+import ThemedView from '../../components/ui/ThemedView';
+import ThemedText from '../../components/ui/ThemedText';
+import Spacer from '../../components/ui/Spacer';
 import Dropdown from 'react-native-input-select';
-import CollapsableContainer from '@/components/CollapsableContainer';
+import CollapsableContainer from '../../components/CollapsableContainer';
 import ModalConfirm from '../../components/ModalConfirm';
 import ModalAlert from '../../components/ModalAlert';
 

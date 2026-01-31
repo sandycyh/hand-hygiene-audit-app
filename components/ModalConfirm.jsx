@@ -2,7 +2,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 
 import ThemedText from './ui/ThemedText';
-import Spacer from '@/components/ui/Spacer';
+import Spacer from '../components/ui/Spacer';
 
 const ModalConfirm = ({ children, visible, onConfirm, onClose }) => {
     return (

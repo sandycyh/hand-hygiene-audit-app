@@ -1,7 +1,7 @@
 import { Modal, View, Pressable, StyleSheet } from 'react-native'
 
-import ThemedView from '@/components/ui/ThemedView';
-import ThemedText from '@/components/ui/ThemedText';
+import ThemedView from '../components/ui/ThemedView';
+import ThemedText from '../components/ui/ThemedText';
 
 export default function ModalView({ visible, result, onClose }) {
 

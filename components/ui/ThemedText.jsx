@@ -1,6 +1,6 @@
 import { Text, useColorScheme } from 'react-native'
 import React from 'react'
-import { Colours } from '@/constants/colours';
+import { Colours } from '../../constants/colours';
 
 const ThemedText = ({ style, title = false, ...props }) => {
   const colourScheme = useColorScheme();

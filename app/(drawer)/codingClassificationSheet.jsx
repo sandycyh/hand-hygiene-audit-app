@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet} from 'react-native'
 import React from 'react'
 
-import codeSheet from '@/assets/images/HH_codeSheet.png';
+import codeSheet from '../../assets/images/HH_codeSheet.png';
 
 export default function CodingClassificationSheet() {
   return (

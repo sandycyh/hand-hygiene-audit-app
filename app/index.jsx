@@ -3,10 +3,10 @@ import { useRouter } from 'expo-router';
 import { Link } from "expo-router";
 
 
-import ThemedView from '@/components/ui/ThemedView';
-import Spacer from '@/components/ui/Spacer';
-import ThemedText from '@/components/ui/ThemedText';
-import Logo from '@/assets/images/dirtyHands.png';
+import ThemedView from '../components/ui/ThemedView';
+import Spacer from '../components/ui/Spacer';
+import ThemedText from '../components/ui/ThemedText';
+import Logo from '../assets/images/dirtyHands.png';
 
 const HomeScreen = () => {
   const router = useRouter();
