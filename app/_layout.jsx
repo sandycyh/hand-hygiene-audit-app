@@ -1,16 +1,18 @@
 import { Stack } from 'expo-router';
 import { Button, StyleSheet } from 'react-native';
 import { SubmitProvider } from '../Context/SubmitResult';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Layout() {
 
     return (
-        <SubmitProvider>
+        <SafeAreaProvider>
+            <SubmitProvider>
                 <Stack
                     screenOptions={{
                         headerShown: false
-                        }}
-                    >;
+                    }}
+                >;
                     <Stack.Screen name='index'
                         options={{
                             title: 'Home',
@@ -22,7 +24,8 @@ export default function Layout() {
                             title: 'Audit Collection',
                         }} />
                 </Stack>
-        </SubmitProvider>
+            </SubmitProvider>
+        </SafeAreaProvider>
     )
 }
 

@@ -13,9 +13,8 @@ import CollapsableContainer from '../../components/CollapsableContainer';
 import ModalConfirm from '../../components/ModalConfirm';
 import ModalAlert from '../../components/ModalAlert';
 
-
-
 export default function log() {
+
 
   //  ********************** time / date / timer section ********************** 
 
@@ -283,7 +282,7 @@ export default function log() {
     })
   }, [navigation])
 
-
+  
   return (
     <SubmitProvider>
       <ThemedView style={styles.container}>
@@ -291,18 +290,20 @@ export default function log() {
           <Spacer size={20} />
           <ThemedText style={styles.title}> Hand Hygiene Observation Form</ThemedText>
           <Spacer size={20} />
+
         </ThemedView>
 
         <ThemedView style={styles.formContainer}>
           <Spacer size={10} />
           <ThemedView style={styles.detailSection}>
             <ThemedText style={styles.dropdownTitle}>Organisation: </ThemedText>
+
             <Dropdown
               dropdownStyle={styles.dropdownMainForm}
               options={orgOptions}
               selectedValue={org}
               onValueChange={(value) => setOrg(value)}
-            />
+            /> 
           </ThemedView>
 
           <Spacer size={7} />
@@ -586,7 +587,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: 5,
     minHeight: 56,
-    height: 56
+    height: 56, 
+    maxHeight: 250,
   },
   dropdownText: {
     fontSize: 14,

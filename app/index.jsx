@@ -10,6 +10,7 @@ import Logo from '../assets/images/dirtyHands.png';
 
 const HomeScreen = () => {
   const router = useRouter();
+console.log(process.env.EXPO_PUBLIC_API_URL);
 
   return (
     <ThemedView style={styles.container}>
@@ -19,14 +20,13 @@ const HomeScreen = () => {
         Hand Hygiene Audit App
       </ThemedText>
       <Spacer size={60} />
- 
+
       <Image source={Logo} style={styles.image}></Image>
       <Spacer size={50} />
-      
+
       <Link href={'/log'} style={styles.link}>
-      <Text style={styles.text}>Log Moments</Text>
+        <Text style={styles.text}>Log Moments</Text>
       </Link>
-      
 
     </ThemedView>
   )
@@ -63,6 +63,6 @@ const styles = StyleSheet.create({
   }
 
 })
-export default HomeScreen; 
+export default HomeScreen;
 
 

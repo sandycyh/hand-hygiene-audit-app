@@ -33,6 +33,14 @@ export function useDropDown() {
             } catch (err) {
                 console.log("FETCH ERROR:", err);
             }
+
+            try {
+                const res = await fetch(API);
+                console.log('STATUS:', res.status);
+            } catch (e) {
+                console.log('FETCH FAILED:', JSON.stringify(e, null, 2));
+            }
+
         }
         loadOrg();
     }, []);
@@ -52,7 +60,7 @@ export function useDropDown() {
         if (!department) return;
 
         (async () => {
-            const reqAuditors = await fetch(`${API}/api/Auditors/${department}`);
+            const reqAuditors = await fetch(`${API}/api/Auditor/${department}`);
             const Auditors = await reqAuditors.json();
             setAuditorOptions(Auditors.map(a => ({ label: a.AuditorName, value: a.AuditorID })))
         })();
