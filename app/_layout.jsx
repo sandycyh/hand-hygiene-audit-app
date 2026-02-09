@@ -1,31 +1,38 @@
 import { Stack } from 'expo-router';
 import { Button, StyleSheet } from 'react-native';
 import { SubmitProvider } from '../Context/SubmitResult';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Layout() {
+    const isLoggedIn = false;
 
     return (
-        <SafeAreaProvider>
-            <SubmitProvider>
-                <Stack
-                    screenOptions={{
-                        headerShown: false
-                    }}
-                >;
-                    <Stack.Screen name='index'
+        <SubmitProvider>
+            <Stack
+                screenOptions={{
+                    headerShown: false
+                }}
+            >;
+                <Stack.Screen name='index'
+                    options={{
+                        title: 'Home',
+                        headerShown: false,
+                    }} />
+                <Stack.Protected guard={false}>
+
+                    <Stack.Screen name='(tabs)'
                         options={{
-                            title: 'Home',
                             headerShown: false,
+                            title: 'Login',
                         }} />
-                    <Stack.Screen name='log'
+                </Stack.Protected>
+                <Stack.Protected guard={true}>
+                    <Stack.Screen name='(drawer)'
                         options={{
-                            headerShown: false,
-                            title: 'Audit Collection',
+                            headerShown: false
                         }} />
-                </Stack>
-            </SubmitProvider>
-        </SafeAreaProvider>
+                </Stack.Protected>
+            </Stack>
+        </SubmitProvider>
     )
 }
 

@@ -10,7 +10,7 @@ import Logo from '../assets/images/dirtyHands.png';
 
 const HomeScreen = () => {
   const router = useRouter();
-console.log(process.env.EXPO_PUBLIC_API_URL);
+  console.log(process.env.EXPO_PUBLIC_API_URL);
 
   return (
     <ThemedView style={styles.container}>
@@ -22,12 +22,20 @@ console.log(process.env.EXPO_PUBLIC_API_URL);
       <Spacer size={60} />
 
       <Image source={Logo} style={styles.image}></Image>
-      <Spacer size={50} />
+      <Spacer size={30} />
+
+      <Link href={'/login'} style={styles.link}>
+        <Text style={styles.text}>Login</Text>
+      </Link>
+
+      <Link href={'/createAcc'} style={styles.link}>
+        <Text style={styles.text}>Create Account</Text>
+      </Link>
 
       <Link href={'/log'} style={styles.link}>
         <Text style={styles.text}>Log Moments</Text>
       </Link>
-
+      
     </ThemedView>
   )
 }
