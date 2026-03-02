@@ -26,10 +26,6 @@ export function SubmitProvider({ children }) {
 
     async function postResult(payload) {
         try {
-            // const reqResultSets = await fetch(`${API}/api/ResultSets/lastID`);
-            // const setID = await reqResultSets.json()
-
-
             const res = await fetch(`${API}/api/Result`, {
                 method: 'POST',
                 headers: {

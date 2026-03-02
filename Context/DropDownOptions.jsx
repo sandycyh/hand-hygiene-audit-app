@@ -62,7 +62,7 @@ export function useDropDown() {
         (async () => {
             const reqAuditors = await fetch(`${API}/api/Auditor/${department}`);
             const Auditors = await reqAuditors.json();
-            setAuditorOptions(Auditors.map(a => ({ label: a.AuditorName, value: a.AuditorID })))
+            setAuditorOptions(Auditors.map(a => ({ label: `${a.FirstName} ${a.LastName}`, value: a.AuditorID })))
         })();
 
     }, [department]);

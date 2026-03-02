@@ -17,7 +17,7 @@ export default function Layout() {
                         title: 'Home',
                         headerShown: false,
                     }} />
-                <Stack.Protected guard={false}>
+                <Stack.Protected guard={true}>
 
                     <Stack.Screen name='(tabs)'
                         options={{
